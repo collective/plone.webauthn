@@ -75,6 +75,15 @@ Install plone.webauthn by adding it to your buildout::
 
 and then running ``bin/buildout``
 
+Install the PAS plugin using::
+
+    http://localhost:8080/Plone/install-pas
+
+Key management
+--------------
+
+    http://localhost:8080/Plone/key-management
+
 
 Authors
 -------
