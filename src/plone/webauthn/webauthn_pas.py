@@ -18,6 +18,7 @@ from Products.PluggableAuthService.plugins.BasePlugin import BasePlugin
 from Products.PluggableAuthService.utils import classImplements
 from Products.PluggableAuthService.utils import createKeywords
 from Products.PluggableAuthService.utils import createViewName
+from BTrees.OOBTree import OOBTree
 from urllib.parse import quote
 from urllib.parse import unquote
 
@@ -26,6 +27,11 @@ import hashlib
 import os
 import sys
 import xmlrpc.client
+
+from zope.annotation.interfaces import IAnnotations
+
+
+KEY = 'plone.webauthn.keys'
 
 
 prefix = os.path.basename(getConfiguration().clienthome)
@@ -63,6 +69,13 @@ class WebauthnPlugin(BasePlugin, Cacheable):
     def __init__(self, id, title=None):
         self._setId(id)
         self.title = title
+
+    @property
+    def annotations(self):
+        all_annotations = IAnnotations(self)
+        if KEY not in all_annotations:
+            all_annotations[KEY] = OOBTree()
+        return all_annotations[KEY]
 
     security.declarePrivate("authenticateCredentials")
 
