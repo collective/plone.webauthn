@@ -27,7 +27,9 @@
 
     <h2>Main content</h2>
     <!--<div tal:replace="view/my_custom_view_method" />-->
-    <!--<div tal:replace="context/my_custom_field" />-->
+        <!--<div tal:replace="context/my_custom_field" />-->
+
+        Form for Webauthn keys management goes here
 
   </metal:block>
   </metal:content-core>

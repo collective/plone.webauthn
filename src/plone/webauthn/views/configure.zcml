@@ -15,13 +15,4 @@
     layer="plone.webauthn.interfaces.IPloneWebauthnLayer"
     />
 
-  <browser:page
-    name="key-management"
-    for="*"
-    class=".key_management.KeyManagement"
-    template="key_management.pt"
-    permission="zope2.View"
-    layer="plone.webauthn.interfaces.IPloneWebauthnLayer"
-    />
-
 </configure>
