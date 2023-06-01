@@ -56,6 +56,7 @@ setup(
         "z3c.jbot",
         "plone.api>=1.8.4",
         "plone.app.dexterity",
+        "loguru",
     ],
     extras_require={
         "test": [
