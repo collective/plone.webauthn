@@ -1,0 +1,27 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser"
+    xmlns:plone="http://namespaces.plone.org/plone"
+    i18n_domain="plone.webauthn">
+
+ <!-- -*- extra stuff goes here -*- -->
+
+  <browser:page
+    name="key-management"
+    for="*"
+    class=".key_management.KeyManagement"
+    template="key_management.pt"
+    permission="zope2.View"
+    layer="plone.webauthn.interfaces.IPloneWebauthnLayer"
+    />
+
+  <browser:page
+    name="key-management"
+    for="*"
+    class=".key_management.KeyManagement"
+    template="key_management.pt"
+    permission="zope2.View"
+    layer="plone.webauthn.interfaces.IPloneWebauthnLayer"
+    />
+
+</configure>
