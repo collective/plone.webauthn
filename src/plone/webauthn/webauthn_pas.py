@@ -1,18 +1,17 @@
 from AccessControl.SecurityInfo import ClassSecurityInfo
 from App.config import getConfiguration
+from BTrees.OOBTree import OOBTree
 from OFS.Cache import Cacheable
 from Products.PageTemplates.PageTemplateFile import PageTemplateFile
 from Products.PluggableAuthService.interfaces.plugins import IAuthenticationPlugin
 from Products.PluggableAuthService.plugins.BasePlugin import BasePlugin
 from Products.PluggableAuthService.utils import classImplements
-from BTrees.OOBTree import OOBTree
+from zope.annotation.interfaces import IAnnotations
 
 import os
 
-from zope.annotation.interfaces import IAnnotations
 
-
-KEY = 'plone.webauthn.keys'
+KEY = "plone.webauthn.keys"
 
 
 prefix = os.path.basename(getConfiguration().clienthome)

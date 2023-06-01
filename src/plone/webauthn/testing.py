@@ -11,7 +11,6 @@ import plone.webauthn
 
 
 class PloneWebauthnLayer(PloneSandboxLayer):
-
     defaultBases = (PLONE_FIXTURE,)
 
     def setUpZope(self, app, configurationContext):
