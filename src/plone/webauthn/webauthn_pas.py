@@ -1,32 +1,13 @@
 from AccessControl.SecurityInfo import ClassSecurityInfo
 from App.config import getConfiguration
-from base64 import decodebytes
-from base64 import encodebytes
-from loguru import logger as LOG
 from OFS.Cache import Cacheable
-from pathlib import Path
 from Products.PageTemplates.PageTemplateFile import PageTemplateFile
 from Products.PluggableAuthService.interfaces.plugins import IAuthenticationPlugin
-from Products.PluggableAuthService.interfaces.plugins import ICredentialsResetPlugin
-from Products.PluggableAuthService.interfaces.plugins import ICredentialsUpdatePlugin
-from Products.PluggableAuthService.interfaces.plugins import IExtractionPlugin
-from Products.PluggableAuthService.interfaces.plugins import IGroupsPlugin
-from Products.PluggableAuthService.interfaces.plugins import IPropertiesPlugin
-from Products.PluggableAuthService.interfaces.plugins import IRolesPlugin
-from Products.PluggableAuthService.interfaces.plugins import IUserEnumerationPlugin
 from Products.PluggableAuthService.plugins.BasePlugin import BasePlugin
 from Products.PluggableAuthService.utils import classImplements
-from Products.PluggableAuthService.utils import createKeywords
-from Products.PluggableAuthService.utils import createViewName
 from BTrees.OOBTree import OOBTree
-from urllib.parse import quote
-from urllib.parse import unquote
 
-import codecs
-import hashlib
 import os
-import sys
-import xmlrpc.client
 
 from zope.annotation.interfaces import IAnnotations
 
