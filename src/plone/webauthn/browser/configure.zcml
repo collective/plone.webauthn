@@ -25,13 +25,13 @@
         class=".install_pas.InstallPAS"
         attribute="install_all"
     />
-
+<!--
     <browser:page
         for="Products.CMFCore.interfaces.ISiteRoot"
         name="manage-webauthn-keys"
         permission="cmf.ManagePortal"
         class=".key_management.KeyManagement"
         template="key_management.pt"
-        >
-
+        />
+-->
 </configure>
