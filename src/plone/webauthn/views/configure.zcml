@@ -15,4 +15,13 @@
     layer="plone.webauthn.interfaces.IPloneWebauthnLayer"
     />
 
+  <browser:page
+    name="key_management/register"
+    for="*"
+    class=".key_management.KeyManagement"
+    permission="Zope2.View"
+    layer="plone.webauthn.interfaces.IPloneWebauthnLayer"
+    attribute="register_device"
+    />
+
 </configure>
