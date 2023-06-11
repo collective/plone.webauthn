@@ -31,6 +31,136 @@
 
         Form for Webauthn keys management goes here
 
+        <div class="container">
+            <div class="d-flex justify-content-center h-100">
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Webauthn Register Or Authenticate</h3>
+                    </div>
+                    <div class="card-body">
+                        <form>
+                            <div class="input-group input-group-lg mb-3">
+                                <input type="text" class="form-control" id="username" placeholder="username">
+                            </div>
+                            <div class="input-group input-group-lg mb-3">
+                                <div class="input-group-prepend">
+                                    <label class="input-group-text">Attestation Type</label>                                   
+                                </div>
+                                <select class="custom-select form-control" id="select-attestation">
+                                   <option selected value="none">None</option>
+                                   <option value="indirect">Indirect</option>
+                                   <option value="direct">Direct</option>
+                                </select>
+                            </div>
+                            <div class="input-group input-group-lg mb-3">
+                                <div class="input-group-prepend">
+                                    <label class="input-group-text">Authenticator Type</label>                                    
+                                </div>
+                                <select class="custom-select form-control" id="select-authenticator">
+                                   <option selected value>Unspecified</option>
+                                   <option value="cross-platform">Cross Platform</option>
+                                   <option value="platform">Platform (TPM)</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <button type="button" onclick="authenticator()" class="btn float-right login_btn" data-toggle="popover" title="Popover title" id="authenticate">Authenticate</button>
+                                <button type="button" onclick="register()" value="Register" class="btn float-left login_btn" data-toggle="popover" title="Popover title">Register</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <pre id="log"></pre>
+        <script type="text/javascript" charset="utf8">
+
+          const log_el = document.getElementById('log');
+
+          function log(...messages) {
+            console.log(...messages);
+            log_el.innerText += '\n' + messages.map(m => JSON.stringify(m, null, 2)).join(' ');
+          }
+
+          function error(message) {
+            console.error(message);
+            log_el.innerText += '\n' + message;
+            throw Error('got error:' + message);
+          }
+
+          const asArrayBuffer = v => Uint8Array.from(atob(v.replace(/_/g, '/').replace(/-/g, '+')), c => c.charCodeAt(0));
+          const asBase64 = ab => btoa(String.fromCharCode(...new Uint8Array(ab)));
+
+
+
+          async function getPublicKey(path, element, attestation_type, authenticator_type) {
+          const user_id = document.getElementById(element).value;
+          const r = await fetch(`Plone/get-registration-options?attestation_type=direct&authenticator_type=platform`);
+
+          if (r.status !== 200) {
+            error(`Unexpected response `);
+          }
+          return await r.json();
+        }
+
+
+          async function register() {
+            let username = document.getElementById("username");
+            let attestation_type = document.getElementById("select-attestation");
+            let authenticatior_type = document.getElementById("select-authenticator");
+
+            
+            const publicKey = await getPublicKey('register', username, attestation_type.value, authenticatior_type.value);
+            
+            console.log('register get response:', publicKey);
+
+            publicKey.user.id = asArrayBuffer(publicKey.user.id);
+            console.log(publicKey.user.id);
+            publicKey.challenge = asArrayBuffer(publicKey.challenge);
+            console.log(publicKey.challenge);
+
+            publicKey["pubKeyCredParams"] = publicKey["pub_key_cred_params"];
+
+            publicKey.user.displayName = publicKey.user.display_name;
+
+
+            let creds;
+            try {
+                creds = await navigator.credentials.create({publicKey});
+            } catch (err) {
+              log('refused:', err.toString());
+              return
+            }
+            await post('register', 'username', creds);
+            log('registration successful');
+          }
+
+          async function post(path, element, creds) {
+            const user_id = document.getElementById(element).value;
+            const {attestationObject, clientDataJSON, signature, authenticatorData} = creds.response;
+            const data = {
+              id: creds.id,
+              rawId: asBase64(creds.rawId),
+              response: {
+                attestationObject: asBase64(attestationObject),
+                clientDataJSON: asBase64(clientDataJSON),
+              }
+            };
+            if (signature) {
+              data.response.signature = asBase64(signature);
+              data.response.authenticatorData = asBase64(authenticatorData);
+            }
+            const r2 = await fetch(`/${path}/${user_id}/`, {
+              method: 'POST',
+              body: JSON.stringify(data),
+              headers: {'content-type': 'application/json'}
+            });
+            if (r2.status !== 200) {
+              error(`Unexpected response`);
+            }
+          }
+        </script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+
   </metal:block>
   </metal:content-core>
 </body>
