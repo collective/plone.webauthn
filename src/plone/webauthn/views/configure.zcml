@@ -6,6 +6,12 @@
 
  <!-- -*- extra stuff goes here -*- -->
 
+  <plone:static
+    name="plone.webauthn"
+    type="plone"
+    directory="static"
+    />
+
   <browser:page
     name="key-management"
     for="*"
@@ -22,6 +28,15 @@
     permission="zope2.View"
     layer="plone.webauthn.interfaces.IPloneWebauthnLayer"
     attribute="get_registration_options"
+    />
+
+  <browser:page
+    name="add-device"
+    for="*"
+    class=".key_management.KeyManagement"
+    permission="zope2.View"
+    layer="plone.webauthn.interfaces.IPloneWebauthnLayer"
+    attribute="add_device"
     />
 
 </configure>

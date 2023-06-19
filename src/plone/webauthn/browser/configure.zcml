@@ -12,11 +12,6 @@
       />
 
   <!-- Publish static files -->
-  <plone:static
-      name="plone.webauthn"
-      type="plone"
-      directory="static"
-      />
 
     <browser:page
         for="Products.CMFCore.interfaces.ISiteRoot"

@@ -16,29 +16,38 @@ const asBase64 = ab => btoa(String.fromCharCode(...new Uint8Array(ab)));
 
 async function getPublicKey(path, element, attestation_type, authenticator_type) {
   const user_id = document.getElementById(element).value;
-  const r = await fetch(`/${path}/${user_id}/?attestation_type=${attestation_type}&authenticator_type=${authenticator_type}`);
+  const r = await fetch(`/Plone/${path}?user_id=${user_id}&attestation_type=${attestation_type}&authenticator_type=${authenticator_type}`);
   if (r.status !== 200) {
     error(`Unexpected response ${r.status}: ${await r.text()}`);
   }
   return await r.json();
 }
 
-async function post(path, element, creds) {
+async function post(path, element, creds, challenge) {
+  
   const user_id = document.getElementById(element).value;
+
+  
   const {attestationObject, clientDataJSON, signature, authenticatorData} = creds.response;
+
+  console.log(challenge);
+  
   const data = {
     id: creds.id,
-    rawId: asBase64(creds.rawId),
+    raw_id: asBase64(creds.rawId),
     response: {
       attestationObject: asBase64(attestationObject),
       clientDataJSON: asBase64(clientDataJSON),
-    }
+    },
+    challenge: challenge
   };
+
+  
   if (signature) {
     data.response.signature = asBase64(signature);
     data.response.authenticatorData = asBase64(authenticatorData);
   }
-  const r2 = await fetch(`/${path}/${user_id}/`, {
+  const r2 = await fetch(`Plone/${path}?user_id=${user_id}`, {
     method: 'POST',
     body: JSON.stringify(data),
     headers: {'content-type': 'application/json'}
@@ -51,18 +60,27 @@ async function post(path, element, creds) {
 async function register() {
   let attestation_type = document.getElementById("select-attestation");
   let authenticatior_type = document.getElementById("select-authenticator");
-  const publicKey = await getPublicKey('register', 'username', attestation_type.value, authenticatior_type.value);
+  const publicKey = await getPublicKey('get-registration-options', 'username', attestation_type.value, authenticatior_type.value);
+  
   console.log('register get response:', publicKey);
+  
   publicKey.user.id = asArrayBuffer(publicKey.user.id);
   publicKey.challenge = asArrayBuffer(publicKey.challenge);
+  
   let creds;
+
+  publicKey["pubKeyCredParams"] = publicKey["pub_key_cred_params"]
+  publicKey["user"]["displayName"] = publicKey["user"]["display_name"]
+  
   try {
       creds = await navigator.credentials.create({publicKey});
   } catch (err) {
     log('refused:', err.toString());
     return
   }
-  await post('register', 'username', creds);
+
+  await post('add-device', 'username', creds, publicKey["expected_challenge"]);
+
   log('registration successful');
 }
 
