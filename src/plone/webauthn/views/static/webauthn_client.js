@@ -27,7 +27,6 @@ async function post(path, element, creds, challenge) {
   
   const user_id = document.getElementById(element).value;
 
-  
   const {attestationObject, clientDataJSON, signature, authenticatorData} = creds.response;
 
   console.log(challenge);

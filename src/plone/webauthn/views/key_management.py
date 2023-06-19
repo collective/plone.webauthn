@@ -25,6 +25,15 @@ from webauthn.helpers.structs import (
     UserVerificationRequirement,
 )
 
+from webauthn.helpers import (
+    aaguid_to_string,
+    bytes_to_base64url,
+    decode_credential_public_key,
+    parse_attestation_object,
+    parse_client_data_json,
+    parse_backup_flags,
+)
+
 from base64 import urlsafe_b64encode
 
 ATTESTATION_TYPE_MAPPING = {
@@ -109,12 +118,6 @@ class KeyManagement(BrowserView):
 
         return json.dumps(data)
     
-    def b64decode(self, s: str) -> bytes:
-        return base64.urlsafe_b64decode(s.encode())
-    
-    def test(self, val: bytes):
-        data = json.loads(val)
-    
 
     def add_device(self):
         alsoProvides(self.request, IDisableCSRFProtection)
@@ -126,6 +129,8 @@ class KeyManagement(BrowserView):
         print(data)
 
         data["raw_id"] = base64.urlsafe_b64decode(data["raw_id"])
+
+        print(data["response"].keys())
 
         for key in data["response"].keys():
             data["response"][key] = base64.urlsafe_b64decode(data["response"][key])
@@ -139,16 +144,18 @@ class KeyManagement(BrowserView):
         
 
 
-        expected_challenge = base64.urlsafe_b64decode( data["challenge"].encode())
+        expected_challenge = base64.urlsafe_b64decode( data["challenge"])
+
+        print(parse_client_data_json(data["response"]["clientDataJSON"]), expected_challenge)
         
         registration = webauthn.verify_registration_response(  # type: ignore
             credential = credentials,
-            expected_challenge = data["challenge"],
+            expected_challenge = expected_challenge,
             expected_rp_id = "localhost",
-            expected_origin = "http://localhost:8000",
+            expected_origin = "http://localhost:8080",
         )
 
-        auth_database[self.request["id"]] = {
+        auth_database[self.request["user_id"]] = {
             "public_key": registration.credential_public_key,
             "sign_count": registration.sign_count,
             "credential_id": registration.credential_id,
@@ -156,4 +163,10 @@ class KeyManagement(BrowserView):
         }
 
         print("registration complete need to add to databse.")
+
+        print(auth_database)
+
+        return b'{"result": "success"}'
+
+
 
