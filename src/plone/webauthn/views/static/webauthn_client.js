@@ -16,7 +16,13 @@ const asBase64 = ab => btoa(String.fromCharCode(...new Uint8Array(ab)));
 
 async function getPublicKey(path, element, attestation_type, authenticator_type) {
   const user_id = document.getElementById(element).value;
+
   const r = await fetch(`/Plone/${path}?user_id=${user_id}&attestation_type=${attestation_type}&authenticator_type=${authenticator_type}`);
+  
+  if(r.status == 404){
+    error("User Not Found");
+  }
+
   if (r.status !== 200) {
     error(`Unexpected response ${r.status}: ${await r.text()}`);
   }
@@ -86,11 +92,15 @@ async function register() {
 async function authenticator() {
   let attestation_type = document.getElementById("select-attestation");
   let authenticatior_type = document.getElementById("select-authenticator");
-  const publicKey = await getPublicKey('auth', 'username', attestation_type.value, authenticatior_type.value);
+
+  const publicKey = await getPublicKey('get-authentication-options', 'username', attestation_type.value, authenticatior_type.value);
+
   console.log('auth get response:', publicKey);
+
   publicKey.challenge = asArrayBuffer(publicKey.challenge);
-  publicKey.allowCredentials[0].id = asArrayBuffer(publicKey.allowCredentials[0].id);
-  delete publicKey.allowCredentials[0].transports;
+  publicKey.allow_credentials[0].id = asArrayBuffer(publicKey.allow_credentials[0].id);
+  delete publicKey.allow_credentials[0].transports;
+  
   let creds;
   try {
       creds = await navigator.credentials.get({publicKey: publicKey});
@@ -98,6 +108,7 @@ async function authenticator() {
     log('refused:', err.toString());
     return
   }
-  await post('auth', 'username', creds);
+  await post('verify-device', 'username', creds, publicKey["expected_challenge"]);
+
   log('authentication successful');
 }

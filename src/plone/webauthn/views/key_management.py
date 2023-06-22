@@ -82,11 +82,13 @@ class KeyManagement(BrowserView):
 
         print(authenticator_type)
 
+        user_id = self.request["user_id"]
+
         public_key = webauthn.generate_registration_options(  # type: ignore
             rp_id = "localhost",
             rp_name = "MyCompanyName",
-            user_id = self.request["user_id"],
-            user_name = "pavan@example.com",
+            user_id = user_id,
+            user_name = f"{user_id}@example.com",
             user_display_name = "Pavan Thota",
             attestation = ATTESTATION_TYPE_MAPPING[attestation_type],
             
@@ -165,6 +167,96 @@ class KeyManagement(BrowserView):
         print("registration complete need to add to databse.")
 
         print(auth_database)
+
+        return b'{"result": "success"}'
+    
+    def get_authentication_options(self):
+        user_id = self.request["user_id"]
+        try:
+            user_creds = auth_database[user_id]
+        except KeyError:
+            print("User Not found")
+            self.request.response.setStatus("Not Found")
+        
+        public_key = webauthn.generate_authentication_options(  # type: ignore
+            rp_id="localhost",
+            timeout=50000,
+            allow_credentials=[
+                PublicKeyCredentialDescriptor(
+                    type=PublicKeyCredentialType.PUBLIC_KEY,
+                    id=user_creds["credential_id"],
+                )
+            ],
+            user_verification=UserVerificationRequirement.DISCOURAGED,
+            )
+        
+        #self.request.session["webauthn_auth_challenge"] = base64.b64encode(public_key.challenge).decode()
+        
+        self.request.response.setHeader("Content-type", "application/json")
+
+        data = public_key.json()
+
+        data = json.loads(data)
+
+        data["expected_challenge"] = base64.b64encode(public_key.challenge).decode()
+
+        return json.dumps(data)
+    
+
+
+    def verify_device(self):
+
+        alsoProvides(self.request, IDisableCSRFProtection)
+
+        user_id = self.request["user_id"]
+        
+        try:
+            user_creds = auth_database[user_id]
+        except KeyError:
+            print("User Not found")
+            self.request.response.setStatus("Not Found")
+        
+
+        print(self.request["BODY"])
+
+        data = json.loads(self.request["BODY"].decode('utf-8'))
+        
+        print(data)
+
+        data["raw_id"] = base64.urlsafe_b64decode(data["raw_id"])
+
+        print(data["response"].keys())
+
+        data["response"]["authenticator_data"] = data["response"]["authenticatorData"]
+
+        del data["response"]["authenticatorData"]
+
+        for key in data["response"].keys():
+            data["response"][key] = base64.urlsafe_b64decode(data["response"][key])
+
+
+        credentials = webauthn.helpers.structs.AuthenticationCredential(
+            id = data["id"],
+            raw_id = data["raw_id"],
+            response = data["response"]
+        )
+        
+
+
+        expected_challenge = base64.urlsafe_b64decode( data["challenge"])
+
+        auth = webauthn.verify_authentication_response(  # type: ignore
+            credential=credentials,
+            expected_challenge=expected_challenge,
+            expected_rp_id="localhost",
+            expected_origin="http://localhost:8080",
+            credential_public_key=user_creds["public_key"],
+            credential_current_sign_count=user_creds["sign_count"],
+        )
+        
+        user_creds["sign_count"] = auth.new_sign_count
+
+        print(user_creds)
 
         return b'{"result": "success"}'
 
