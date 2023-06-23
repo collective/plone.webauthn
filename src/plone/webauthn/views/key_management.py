@@ -34,7 +34,7 @@ from webauthn.helpers import (
     parse_backup_flags,
 )
 
-from base64 import urlsafe_b64encode
+from src.plone.webauthn.key_data import IKeyData
 
 ATTESTATION_TYPE_MAPPING = {
     "none": AttestationConveyancePreference.NONE,
@@ -164,12 +164,27 @@ class KeyManagement(BrowserView):
             "challenge": expected_challenge,
         }
 
+        data = {
+            "public_key": registration.credential_public_key,
+            "sign_count": registration.sign_count,
+            "credential_id": registration.credential_id,
+            "challenge": expected_challenge,
+        }
+
         print("registration complete need to add to databse.")
 
         print(auth_database)
 
+        data_base = IKeyData(self.context)
+
+        data_base.add_key(self.request["user_id"], data)
+
+        print(data_base.get_key_by_user_id(self.request["user_id"]))
+
         return b'{"result": "success"}'
     
+
+
     def get_authentication_options(self):
         user_id = self.request["user_id"]
         try:

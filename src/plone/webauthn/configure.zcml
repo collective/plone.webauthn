@@ -17,6 +17,12 @@
 
   <include file="permissions.zcml" />
 
+  <adapter
+      factory="plone.webauthn.src.plone.webauthn.key_data.KeyDataAdapter"
+      provides="plone.webauthn.src.plone.webauthn.key_data.IKeyData"
+      for="*"
+    />
+
   <genericsetup:registerProfile
       name="default"
       title="plone.webauthn"
