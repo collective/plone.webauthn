@@ -1,16 +1,17 @@
 # -*- coding: utf-8 -*-
+from .webauthn_pas import manage_addWebauthnPlugin
 from Products.CMFPlone.interfaces import INonInstallable
 from zope.interface import implementer
+
 import plone.api
 import sys
-from .webauthn_pas import manage_addWebauthnPlugin
+
 
 PLUGIN_ID = "Webauthn_helper"
 
 
 @implementer(INonInstallable)
 class HiddenProfiles(object):
-
     def getNonInstallableProfiles(self):
         """Hide uninstall profile from site-creation and quickinstaller."""
         return [
@@ -25,6 +26,7 @@ class HiddenProfiles(object):
 def log(msg):
     print(msg)
     sys.stdout.flush()
+
 
 def post_install(context):
     """Post install script"""
