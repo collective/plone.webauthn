@@ -34,7 +34,7 @@ from webauthn.helpers import (
     parse_backup_flags,
 )
 
-from src.plone.webauthn.key_data import IKeyData
+from ..key_data import IKeyData
 
 ATTESTATION_TYPE_MAPPING = {
     "none": AttestationConveyancePreference.NONE,

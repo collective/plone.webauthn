@@ -2,7 +2,7 @@ import zope.interface
 from zope.annotation.interfaces import IAnnotations
 from BTrees.OOBTree import OOBTree
 
-LOG_KEY = 'src.plone.webauthn.connector.keydata'
+LOG_KEY = 'plone.webauthn.connector.keydata'
 
 class IKeyData(zope.interface.Interface):
     """ Marker interface for User """

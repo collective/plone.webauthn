@@ -13,13 +13,6 @@
 
   <!-- Publish static files -->
 
-    <browser:page
-        for="Products.CMFCore.interfaces.ISiteRoot"
-        name="install-all"
-        permission="cmf.ManagePortal"
-        class=".install_pas.InstallPAS"
-        attribute="install_all"
-    />
 <!--
     <browser:page
         for="Products.CMFCore.interfaces.ISiteRoot"
