@@ -260,5 +260,18 @@ class KeyManagement(BrowserView):
 
         return b'{"result": "success"}'
 
+    def store_something(self):
+        """ Browser view for storing something """
 
+        plugin = self.context.acl_users.Webauthn_helper
+        annotations = plugin.annotations
+
+        user_id = "xxxx"
+        your_data = dict(created="xxx", key="yyyy")
+
+        annotations[user_id] = your_data
+        annotations._p_changed = 1
+
+
+        print("saved")
 
