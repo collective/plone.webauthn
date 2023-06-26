@@ -175,6 +175,10 @@ class KeyManagement(BrowserView):
 
         print(auth_database)
 
+        # wrong: self.context = your Plone site
+        # but you want to store the data on the object of the PAS Plugin
+        # import plone.api
+        # data_base = plone.api.portal.get().restrictedTraverse("acl_users/Webauthn_helper")
         data_base = IKeyData(self.context)
 
         data_base.add_key(self.request["user_id"], data)
