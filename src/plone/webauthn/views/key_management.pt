@@ -40,7 +40,7 @@
                     <div class="card-body">
                         <form>
                             <div class="input-group input-group-lg mb-3">
-                                <input type="text" class="form-control" id="username" placeholder="username">
+                                <input type="text" class="form-control" id="user_id" placeholder="Email">
                             </div>
                             <div class="input-group input-group-lg mb-3">
                                 <div class="input-group-prepend">

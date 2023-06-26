@@ -57,4 +57,13 @@
     attribute="verify_device"
     />
 
+  <browser:page
+    name="get-all-data"
+    for="*"
+    class=".key_management.KeyManagement"
+    permission="zope2.View"
+    layer="plone.webauthn.interfaces.IPloneWebauthnLayer"
+    attribute="get_all_data"
+    />
+
 </configure>

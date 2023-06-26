@@ -65,8 +65,13 @@ async function post(path, element, creds, challenge) {
 async function register() {
   let attestation_type = document.getElementById("select-attestation");
   let authenticatior_type = document.getElementById("select-authenticator");
-  const publicKey = await getPublicKey('get-registration-options', 'username', attestation_type.value, authenticatior_type.value);
+  const publicKey = await getPublicKey('get-registration-options', 'user_id', attestation_type.value, authenticatior_type.value);
   
+  if ( 'error' in publicKey){
+    alert(publicKey.error);
+    return;
+  }
+
   console.log('register get response:', publicKey);
   
   publicKey.user.id = asArrayBuffer(publicKey.user.id);
@@ -84,7 +89,7 @@ async function register() {
     return
   }
 
-  await post('add-device', 'username', creds, publicKey["expected_challenge"]);
+  await post('add-device', 'user_id', creds, publicKey["expected_challenge"]);
 
   log('registration successful');
 }
@@ -93,7 +98,12 @@ async function authenticator() {
   let attestation_type = document.getElementById("select-attestation");
   let authenticatior_type = document.getElementById("select-authenticator");
 
-  const publicKey = await getPublicKey('get-authentication-options', 'username', attestation_type.value, authenticatior_type.value);
+  const publicKey = await getPublicKey('get-authentication-options', 'user_id', attestation_type.value, authenticatior_type.value);
+
+  if ( 'error' in publicKey){
+    alert(publicKey.error);
+    return;
+  }
 
   console.log('auth get response:', publicKey);
 
@@ -108,7 +118,7 @@ async function authenticator() {
     log('refused:', err.toString());
     return
   }
-  await post('verify-device', 'username', creds, publicKey["expected_challenge"]);
+  await post('verify-device', 'user_id', creds, publicKey["expected_challenge"]);
 
   log('authentication successful');
 }

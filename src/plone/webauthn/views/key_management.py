@@ -10,6 +10,7 @@ from plone.protect.interfaces import IDisableCSRFProtection
 import json
 import webauthn
 import base64
+import plone.api
 
 from webauthn.helpers.structs import (
     AttestationConveyancePreference,
@@ -72,24 +73,21 @@ class KeyManagement(BrowserView):
     def get_registration_options(self):
         alsoProvides(self.request, IDisableCSRFProtection)
 
-        print(self.request.keys())
-
         attestation_type = self.request["attestation_type"]
-
-        print(attestation_type)
-
         authenticator_type = self.request["authenticator_type"]
-
-        print(authenticator_type)
-
         user_id = self.request["user_id"]
+
+        data_base = IKeyData(self.context)
+
+        if user_id in list(data_base.keys.keys()):
+            return b'{"error": "user exists"}'
 
         public_key = webauthn.generate_registration_options(  # type: ignore
             rp_id = "localhost",
-            rp_name = "MyCompanyName",
+            rp_name = "Plone",
             user_id = user_id,
-            user_name = f"{user_id}@example.com",
-            user_display_name = "Pavan Thota",
+            user_name = user_id,
+            user_display_name = user_id,
             attestation = ATTESTATION_TYPE_MAPPING[attestation_type],
             
             authenticator_selection=AuthenticatorSelectionCriteria(
@@ -101,22 +99,11 @@ class KeyManagement(BrowserView):
             ),
         )
 
-        print(base64.b64encode(public_key.challenge).decode())
-
-        #self.request["SESSION"] = {"webauthn_register_challenge": base64.b64encode(public_key.challenge).decode()}
-        #self.request.session["webauthn_register_challenge"] = base64.b64encode(public_key.challenge).decode()
-
-        print(type(public_key))
-
         self.request.response.setHeader("Content-type", "application/json")
 
         data = public_key.json()
-
         data = json.loads(data)
-
         data["expected_challenge"] = base64.b64encode(public_key.challenge).decode()
-
-
 
         return json.dumps(data)
     
@@ -124,31 +111,19 @@ class KeyManagement(BrowserView):
     def add_device(self):
         alsoProvides(self.request, IDisableCSRFProtection)
 
-        print(self.request["BODY"])
-
         data = json.loads(self.request["BODY"].decode('utf-8'))
-        
-        print(data)
-
         data["raw_id"] = base64.urlsafe_b64decode(data["raw_id"])
-
-        print(data["response"].keys())
 
         for key in data["response"].keys():
             data["response"][key] = base64.urlsafe_b64decode(data["response"][key])
-
 
         credentials = webauthn.helpers.structs.RegistrationCredential(
             id = data["id"],
             raw_id = data["raw_id"],
             response = data["response"]
         )
-        
-
 
         expected_challenge = base64.urlsafe_b64decode( data["challenge"])
-
-        print(parse_client_data_json(data["response"]["clientDataJSON"]), expected_challenge)
         
         registration = webauthn.verify_registration_response(  # type: ignore
             credential = credentials,
@@ -156,13 +131,6 @@ class KeyManagement(BrowserView):
             expected_rp_id = "localhost",
             expected_origin = "http://localhost:8080",
         )
-
-        auth_database[self.request["user_id"]] = {
-            "public_key": registration.credential_public_key,
-            "sign_count": registration.sign_count,
-            "credential_id": registration.credential_id,
-            "challenge": expected_challenge,
-        }
 
         data = {
             "public_key": registration.credential_public_key,
@@ -173,17 +141,17 @@ class KeyManagement(BrowserView):
 
         print("registration complete need to add to databse.")
 
-        print(auth_database)
-
         # wrong: self.context = your Plone site
         # but you want to store the data on the object of the PAS Plugin
         # import plone.api
         # data_base = plone.api.portal.get().restrictedTraverse("acl_users/Webauthn_helper")
-        data_base = IKeyData(self.context)
+        #data_base = IKeyData(plone.api.portal.get().restrictedTraverse("acl_users/Webauthn_helper"))
+        #TypeError: ('Could not adapt', <WebauthnPlugin at /Plone/acl_users/Webauthn_helper>, <InterfaceClass zope.annotation.interfaces.IAnnotations>)
 
+        data_base = IKeyData(self.context)
         data_base.add_key(self.request["user_id"], data)
 
-        print(data_base.get_key_by_user_id(self.request["user_id"]))
+        print(f"key added to database with user id: {self.request['user_id']}")
 
         return b'{"result": "success"}'
     
@@ -191,11 +159,14 @@ class KeyManagement(BrowserView):
 
     def get_authentication_options(self):
         user_id = self.request["user_id"]
+        user_creds = None
+
+        data_base = IKeyData(self.context)
+
         try:
-            user_creds = auth_database[user_id]
-        except KeyError:
-            print("User Not found")
-            self.request.response.setStatus("Not Found")
+            user_creds = data_base.get_key_by_user_id(self.request["user_id"])[0]
+        except ValueError:
+            return b'{"error": "user not found"}'
         
         public_key = webauthn.generate_authentication_options(  # type: ignore
             rp_id="localhost",
@@ -209,14 +180,10 @@ class KeyManagement(BrowserView):
             user_verification=UserVerificationRequirement.DISCOURAGED,
             )
         
-        #self.request.session["webauthn_auth_challenge"] = base64.b64encode(public_key.challenge).decode()
-        
         self.request.response.setHeader("Content-type", "application/json")
 
         data = public_key.json()
-
         data = json.loads(data)
-
         data["expected_challenge"] = base64.b64encode(public_key.challenge).decode()
 
         return json.dumps(data)
@@ -228,31 +195,21 @@ class KeyManagement(BrowserView):
         alsoProvides(self.request, IDisableCSRFProtection)
 
         user_id = self.request["user_id"]
-        
-        try:
-            user_creds = auth_database[user_id]
-        except KeyError:
-            print("User Not found")
-            self.request.response.setStatus("Not Found")
-        
+        data_base = IKeyData(self.context)
+        user_creds = None
 
-        print(self.request["BODY"])
+        if user_id not in list(data_base.keys.keys()):
+            return b'{"error": "user not found"}'
+        else:
+            user_creds = data_base.get_key_by_user_id(user_id)[0]
 
         data = json.loads(self.request["BODY"].decode('utf-8'))
-        
-        print(data)
-
         data["raw_id"] = base64.urlsafe_b64decode(data["raw_id"])
-
-        print(data["response"].keys())
-
         data["response"]["authenticator_data"] = data["response"]["authenticatorData"]
-
         del data["response"]["authenticatorData"]
 
         for key in data["response"].keys():
             data["response"][key] = base64.urlsafe_b64decode(data["response"][key])
-
 
         credentials = webauthn.helpers.structs.AuthenticationCredential(
             id = data["id"],
@@ -260,8 +217,6 @@ class KeyManagement(BrowserView):
             response = data["response"]
         )
         
-
-
         expected_challenge = base64.urlsafe_b64decode( data["challenge"])
 
         auth = webauthn.verify_authentication_response(  # type: ignore
@@ -272,12 +227,23 @@ class KeyManagement(BrowserView):
             credential_public_key=user_creds["public_key"],
             credential_current_sign_count=user_creds["sign_count"],
         )
-        
-        user_creds["sign_count"] = auth.new_sign_count
+        print(auth)
 
-        print(user_creds)
+        data_base.update_key(user_id, {"sign_count": auth.new_sign_count})
 
         return b'{"result": "success"}'
+    
+    def get_all_data(self):
+        data_base = IKeyData(self.context)
+
+        print(list(data_base.annotations.keys()))
+
+        for k in list(data_base.annotations.keys()):
+            print(k)
+
+        
+
+        return data_base.annotations
 
 
 

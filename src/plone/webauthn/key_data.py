@@ -1,4 +1,5 @@
 import zope.interface
+import plone.api
 from zope.annotation.interfaces import IAnnotations
 from BTrees.OOBTree import OOBTree
 
@@ -25,13 +26,14 @@ class KeyDataAdapter(object):
 
     @property
     def keys(self):
-        return self.annotations.values()
+        return self.annotations
     
     def get_key_by_user_id(self, user_id):
         """ Find a user by uuid """
-        for key in self.keys:
-            if user_id == key.get('user_id'):
-                return key
+        for key in list(self.keys.keys()):
+            if user_id == key:
+                return self.annotations[key]
+            
         raise ValueError(
             f'No key Found user_id {user_id} found')
     
@@ -39,8 +41,15 @@ class KeyDataAdapter(object):
         if not data:
             raise ValueError("data cannot be None")
         
-        self.annotations[user_id] = self.annotations.get(data, []).append(data)
+        self.annotations[user_id] = self.annotations.get(user_id, list())
+        self.annotations[user_id].append(data)
+        self.annotations._p_changed = 1
 
+    
+    def update_key(self, user_id, new_data):
+
+        for k, v in new_data.items():
+            self.annotations[user_id][0][k] = v
         
     
     def clear(self):
