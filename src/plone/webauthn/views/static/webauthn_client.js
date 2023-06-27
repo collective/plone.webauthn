@@ -1,7 +1,6 @@
 const log_el = document.getElementById('log');
 
 function log(...messages) {
-  console.log(...messages);
   log_el.innerText += '\n' + messages.map(m => JSON.stringify(m, null, 2)).join(' ');
 }
 
@@ -14,10 +13,11 @@ function error(message) {
 const asArrayBuffer = v => Uint8Array.from(atob(v.replace(/_/g, '/').replace(/-/g, '+')), c => c.charCodeAt(0));
 const asBase64 = ab => btoa(String.fromCharCode(...new Uint8Array(ab)));
 
-async function getPublicKey(path, element, attestation_type, authenticator_type) {
-  const user_id = document.getElementById(element).value;
+async function getPublicKey(path, attestation_type, authenticator_type) {
 
-  const r = await fetch(`/Plone/${path}?user_id=${user_id}&attestation_type=${attestation_type}&authenticator_type=${authenticator_type}`);
+  cname = document.getElementById("cname").value;
+
+  const r = await fetch(`/Plone/${path}?cname=${cname}&attestation_type=${attestation_type}&authenticator_type=${authenticator_type}`);
   
   if(r.status == 404){
     error("User Not Found");
@@ -29,13 +29,9 @@ async function getPublicKey(path, element, attestation_type, authenticator_type)
   return await r.json();
 }
 
-async function post(path, element, creds, challenge) {
-  
-  const user_id = document.getElementById(element).value;
+async function post(path, creds, challenge) {
 
   const {attestationObject, clientDataJSON, signature, authenticatorData} = creds.response;
-
-  console.log(challenge);
   
   const data = {
     id: creds.id,
@@ -52,7 +48,8 @@ async function post(path, element, creds, challenge) {
     data.response.signature = asBase64(signature);
     data.response.authenticatorData = asBase64(authenticatorData);
   }
-  const r2 = await fetch(`Plone/${path}?user_id=${user_id}`, {
+  cname = document.getElementById("cname").value;
+  const r2 = await fetch(`Plone/${path}?cname=${cname}`, {
     method: 'POST',
     body: JSON.stringify(data),
     headers: {'content-type': 'application/json'}
@@ -65,7 +62,7 @@ async function post(path, element, creds, challenge) {
 async function register() {
   let attestation_type = document.getElementById("select-attestation");
   let authenticatior_type = document.getElementById("select-authenticator");
-  const publicKey = await getPublicKey('get-registration-options', 'user_id', attestation_type.value, authenticatior_type.value);
+  const publicKey = await getPublicKey('get-registration-options', attestation_type.value, authenticatior_type.value);
   
   if ( 'error' in publicKey){
     alert(publicKey.error);
@@ -89,27 +86,28 @@ async function register() {
     return
   }
 
-  await post('add-device', 'user_id', creds, publicKey["expected_challenge"]);
+  await post('add-device', creds, publicKey["expected_challenge"]);
 
   log('registration successful');
+  getKeys();
 }
 
 async function authenticator() {
   let attestation_type = document.getElementById("select-attestation");
   let authenticatior_type = document.getElementById("select-authenticator");
 
-  const publicKey = await getPublicKey('get-authentication-options', 'user_id', attestation_type.value, authenticatior_type.value);
+  const publicKey = await getPublicKey('get-authentication-options', attestation_type.value, authenticatior_type.value);
 
   if ( 'error' in publicKey){
     alert(publicKey.error);
     return;
   }
 
-  console.log('auth get response:', publicKey);
-
   publicKey.challenge = asArrayBuffer(publicKey.challenge);
   publicKey.allow_credentials[0].id = asArrayBuffer(publicKey.allow_credentials[0].id);
   delete publicKey.allow_credentials[0].transports;
+
+  console.log(publicKey);
   
   let creds;
   try {
@@ -118,7 +116,7 @@ async function authenticator() {
     log('refused:', err.toString());
     return
   }
-  await post('verify-device', 'user_id', creds, publicKey["expected_challenge"]);
+  await post('verify-device', creds, publicKey["expected_challenge"]);
 
   log('authentication successful');
 }

@@ -24,6 +24,65 @@
 
   <metal:content-core fill-slot="content-core">
   <metal:block define-macro="content-core">
+  
+  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+  <script>
+    $(document).ready(function(){
+        getKeys();
+    });
+
+    function getKeys(){
+
+        $.ajax({
+            type: "GET",
+            url: "/Plone/get-keys-for-user",
+            success: function(data) {
+                console.log(typeof(data));
+
+                data = $.parseJSON(data);
+
+                var table = document.createElement('table');
+
+                var tr = table.insertRow(-1);
+
+                var th1 = document.createElement("th");
+                th1.innerHTML = "Credential Name";
+                tr.append(th1);
+                var th2 = document.createElement("th");
+                th2.innerHTML = "Action";
+                tr.append(th2);
+
+                for(var i = 0; i < data.length; i++){
+                    tr = table.insertRow(-1);
+                    var tabcell1 = tr.insertCell(-1);
+                    tabcell1.innerHTML = data[i];
+                    var tabcell2 = tr.insertCell(-1);
+                    var btn = document.createElement("button");
+                    btn.innerHTML = "Delete";
+                    btn.addEventListener("click", function deleteKey(){
+                        cname = this.parentNode.parentNode.childNodes[0].innerHTML;
+                        $.ajax({
+                            type: "GET",
+                            url: "/Plone/delete-credential?cname="+cname,
+                            success: function(message) {
+                                console.log(message);
+                                getKeys();
+                            }
+                        });
+                    });
+                    tabcell2.append(btn);
+                }
+
+                var divContainer = document.getElementById("showCredentials");
+                divContainer.innerHTML = "";
+                divContainer.appendChild(table);
+
+
+            }
+        });
+    };
+  
+  </script>
 
     <h2>Main content</h2>
     <!--<div tal:replace="view/my_custom_view_method" />-->
@@ -40,7 +99,7 @@
                     <div class="card-body">
                         <form>
                             <div class="input-group input-group-lg mb-3">
-                                <input type="text" class="form-control" id="user_id" placeholder="Email">
+                                <input type="text" class="form-control" id="cname" placeholder="Credential Name">
                             </div>
                             <div class="input-group input-group-lg mb-3">
                                 <div class="input-group-prepend">
@@ -71,10 +130,9 @@
                 </div>
             </div>
         </div>
+        <div class="d-flex justify-content-center h-100 card" id = "showCredentials"></div>
         <pre id="log"></pre>
         <script type="text/javascript" src="++plone++plone.webauthn/webauthn_client.js" charset="utf8"></script>
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
-
   </metal:block>
   </metal:content-core>
 </body>

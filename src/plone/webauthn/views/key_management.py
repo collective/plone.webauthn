@@ -75,19 +75,21 @@ class KeyManagement(BrowserView):
 
         attestation_type = self.request["attestation_type"]
         authenticator_type = self.request["authenticator_type"]
-        user_id = self.request["user_id"]
+        cname = self.request["cname"]
+        user_id = str(plone.api.user.get_current())
 
         data_base = IKeyData(self.context)
 
         if user_id in list(data_base.keys.keys()):
-            return b'{"error": "user exists"}'
+            if cname in list(data_base.keys[user_id].keys()):
+                return b'{"error": "device already registered"}'
 
         public_key = webauthn.generate_registration_options(  # type: ignore
             rp_id = "localhost",
             rp_name = "Plone",
-            user_id = user_id,
+            user_id = cname,
             user_name = user_id,
-            user_display_name = user_id,
+            user_display_name = user_id+"-"+cname,
             attestation = ATTESTATION_TYPE_MAPPING[attestation_type],
             
             authenticator_selection=AuthenticatorSelectionCriteria(
@@ -139,7 +141,7 @@ class KeyManagement(BrowserView):
             "challenge": expected_challenge,
         }
 
-        print("registration complete need to add to databse.")
+        print("registration complete need to add to database.")
 
         # wrong: self.context = your Plone site
         # but you want to store the data on the object of the PAS Plugin
@@ -149,24 +151,30 @@ class KeyManagement(BrowserView):
         #TypeError: ('Could not adapt', <WebauthnPlugin at /Plone/acl_users/Webauthn_helper>, <InterfaceClass zope.annotation.interfaces.IAnnotations>)
 
         data_base = IKeyData(self.context)
-        data_base.add_key(self.request["user_id"], data)
+        user_id = str(plone.api.user.get_current())
+        cname = self.request["cname"]
+        data_base.add_key(user_id, cname, data)
 
-        print(f"key added to database with user id: {self.request['user_id']}")
+        print(f"key added to database with cname: {self.request['cname']}")
 
         return b'{"result": "success"}'
     
 
 
     def get_authentication_options(self):
-        user_id = self.request["user_id"]
+        user_id = str(plone.api.user.get_current())
+        cname = self.request["cname"]
         user_creds = None
 
         data_base = IKeyData(self.context)
 
-        try:
-            user_creds = data_base.get_key_by_user_id(self.request["user_id"])[0]
-        except ValueError:
-            return b'{"error": "user not found"}'
+        if user_id not in data_base.keys.keys():
+            return b'{"error": "No devices registered"}'
+        else:
+            if cname not in data_base.keys[user_id].keys():
+                return b'{"error": "No devices registered with the device name"}'
+
+        user_creds = data_base.get_user_device_key(user_id, cname)
         
         public_key = webauthn.generate_authentication_options(  # type: ignore
             rp_id="localhost",
@@ -194,14 +202,10 @@ class KeyManagement(BrowserView):
 
         alsoProvides(self.request, IDisableCSRFProtection)
 
-        user_id = self.request["user_id"]
+        user_id = str(plone.api.user.get_current())
+        cname = self.request["cname"]
         data_base = IKeyData(self.context)
-        user_creds = None
-
-        if user_id not in list(data_base.keys.keys()):
-            return b'{"error": "user not found"}'
-        else:
-            user_creds = data_base.get_key_by_user_id(user_id)[0]
+        user_creds = data_base.get_user_device_key(user_id, cname)
 
         data = json.loads(self.request["BODY"].decode('utf-8'))
         data["raw_id"] = base64.urlsafe_b64decode(data["raw_id"])
@@ -229,21 +233,54 @@ class KeyManagement(BrowserView):
         )
         print(auth)
 
-        data_base.update_key(user_id, {"sign_count": auth.new_sign_count})
+        data_base.update_key(user_id, cname, {"sign_count": auth.new_sign_count})
 
         return b'{"result": "success"}'
     
-    def get_all_data(self):
-        data_base = IKeyData(self.context)
+    def get_keys_for_user(self):
+        user_id = str(plone.api.user.get_current())
 
-        print(list(data_base.annotations.keys()))
+        database = IKeyData(self.context)
 
-        for k in list(data_base.annotations.keys()):
-            print(k)
-
+        if user_id not in list(database.keys.keys()):
+            return json.dumps([])
         
+        credential_names = list(database.keys[user_id].keys())
 
-        return data_base.annotations
+        return json.dumps(credential_names)
+    
+    def delete_credential(self):
+        alsoProvides(self.request, IDisableCSRFProtection)
+        database = IKeyData(self.context)
+
+        user_id = str(plone.api.user.get_current())
+        cname = self.request["cname"]
+
+        print(user_id,cname)
+
+        del database.keys[user_id][cname]
+        database.keys._p_changed = 1
+
+        return b"{message: deleted}"
+        
+    
+    def delete_all(self):
+        alsoProvides(self.request, IDisableCSRFProtection)
+        database = IKeyData(self.context)
+
+        for key in list(database.keys.keys()):
+            del database.keys[key]
+
+        print(list(database.keys.keys()))
+
+        for key in list(database.keys.keys()):
+            print(key, database.keys[key])
+
+    def work(self):
+        database = IKeyData(self.context)
+        for key in list(database.keys.keys()):
+            print(key, database.keys[key])
+        
 
 
 

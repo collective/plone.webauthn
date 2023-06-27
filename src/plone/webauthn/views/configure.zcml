@@ -17,7 +17,7 @@
     for="*"
     class=".key_management.KeyManagement"
     template="key_management.pt"
-    permission="zope2.View"
+    permission="cmf.SetOwnProperties"
     layer="plone.webauthn.interfaces.IPloneWebauthnLayer"
     />
 
@@ -25,7 +25,7 @@
     name="get-registration-options"
     for="*"
     class=".key_management.KeyManagement"
-    permission="zope2.View"
+    permission="cmf.SetOwnProperties"
     layer="plone.webauthn.interfaces.IPloneWebauthnLayer"
     attribute="get_registration_options"
     />
@@ -34,7 +34,7 @@
     name="add-device"
     for="*"
     class=".key_management.KeyManagement"
-    permission="zope2.View"
+    permission="cmf.SetOwnProperties"
     layer="plone.webauthn.interfaces.IPloneWebauthnLayer"
     attribute="add_device"
     />
@@ -43,7 +43,7 @@
     name="get-authentication-options"
     for="*"
     class=".key_management.KeyManagement"
-    permission="zope2.View"
+    permission="cmf.SetOwnProperties"
     layer="plone.webauthn.interfaces.IPloneWebauthnLayer"
     attribute="get_authentication_options"
     />
@@ -52,18 +52,46 @@
     name="verify-device"
     for="*"
     class=".key_management.KeyManagement"
-    permission="zope2.View"
+    permission="cmf.SetOwnProperties"
     layer="plone.webauthn.interfaces.IPloneWebauthnLayer"
     attribute="verify_device"
     />
 
   <browser:page
-    name="get-all-data"
+    name="get-keys-for-user"
     for="*"
     class=".key_management.KeyManagement"
-    permission="zope2.View"
+    permission="cmf.SetOwnProperties"
     layer="plone.webauthn.interfaces.IPloneWebauthnLayer"
-    attribute="get_all_data"
+    attribute="get_keys_for_user"
     />
+
+  <browser:page
+    name="delete-credential"
+    for="*"
+    class=".key_management.KeyManagement"
+    permission="cmf.SetOwnProperties"
+    layer="plone.webauthn.interfaces.IPloneWebauthnLayer"
+    attribute="delete_credential"
+    />
+
+  <browser:page
+    name="work"
+    for="*"
+    class=".key_management.KeyManagement"
+    permission="cmf.ManagePortal"
+    layer="plone.webauthn.interfaces.IPloneWebauthnLayer"
+    attribute="work"
+    />
+
+  <browser:page
+    name="delete-all"
+    for="*"
+    class=".key_management.KeyManagement"
+    permission="cmf.ManagePortal"
+    layer="plone.webauthn.interfaces.IPloneWebauthnLayer"
+    attribute="delete_all"
+    />
+  
 
 </configure>
