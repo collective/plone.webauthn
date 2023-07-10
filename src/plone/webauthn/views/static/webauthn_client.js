@@ -69,7 +69,7 @@ async function register() {
     return;
   }
 
-  console.log('register get response:', publicKey);
+  //console.log('register get response:', publicKey);
   
   publicKey.user.id = asArrayBuffer(publicKey.user.id);
   publicKey.challenge = asArrayBuffer(publicKey.challenge);
@@ -107,7 +107,7 @@ async function authenticator() {
   publicKey.allow_credentials[0].id = asArrayBuffer(publicKey.allow_credentials[0].id);
   delete publicKey.allow_credentials[0].transports;
 
-  console.log(publicKey);
+  //console.log(publicKey);
   
   let creds;
   try {

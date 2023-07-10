@@ -62,6 +62,8 @@ class WebauthnPlugin(BasePlugin, Cacheable):
     def authenticateCredentials(self, credentials):
         """Find out if the login and password is correct"""
 
+        print(self.request)
+
         print("Webauthn credentials:", credentials)
         return None
         return (login, login)

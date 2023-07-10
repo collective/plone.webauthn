@@ -1,0 +1,114 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+      i18n:domain="plone.webauthn"
+      metal:use-macro="context/main_template/macros/master">
+<body>
+
+  <metal:custom_title fill-slot="content-title">
+    <h1 tal:replace="structure context/@@title" />
+
+    <!-- @@title view template: -->
+    <!--
+    <h1 tal:define="title context/Title" tal:condition="title" tal:content="title">
+      Title or id
+    </h1>
+    -->
+
+  </metal:custom_title>
+
+  <metal:custom_description fill-slot="content-description">
+    <p tal:replace="structure context/@@description" />
+  </metal:custom_description>
+
+  <metal:content-core fill-slot="content-core">
+  <metal:block define-macro="content-core">
+
+  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+  <script>
+
+    function getKeys(){
+
+        user_id = document.getElementById("user_name").value;
+
+        $.ajax({
+            type: "GET",
+            url: "/Plone/get-keys-for-login?user_id=" + user_id,
+            success: function(data) {
+                console.log(typeof(data));
+
+                data = $.parseJSON(data);
+
+                var table = document.createElement('table');
+
+                var tr = table.insertRow(-1);
+
+                var th1 = document.createElement("th");
+                th1.innerHTML = "Credential Name";
+                tr.append(th1);
+                var th2 = document.createElement("th");
+                th2.innerHTML = "Action";
+                tr.append(th2);
+
+                for(var i = 0; i < data.length; i++){
+                    tr = table.insertRow(-1);
+                    var tabcell1 = tr.insertCell(-1);
+                    tabcell1.innerHTML = data[i];
+                    var tabcell2 = tr.insertCell(-1);
+                    var btn = document.createElement("button");
+                    btn.innerHTML = "Login";
+                    btn.addEventListener("click", function authenticate(){
+                        user_id = document.getElementById("user_name").value;
+                        cname = this.parentNode.parentNode.childNodes[0].innerHTML;
+
+                        authenticator(user_id, cname);
+
+                    });
+                    tabcell2.append(btn);
+                }
+
+                var divContainer = document.getElementById("showCredentials");
+                divContainer.innerHTML = "";
+                divContainer.appendChild(table);
+
+
+            }
+        });
+    };
+  
+  </script>
+
+
+  <h2>Main content</h2>
+    <!--<div tal:replace="view/my_custom_view_method" />-->
+        <!--<div tal:replace="context/my_custom_field" />-->
+
+        Form for Login goes here
+
+        <div class="container">
+            <div class="d-flex justify-content-center h-100">
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Webauthn Login</h3>
+                    </div>
+                    <div class="card-body">
+                        <form>
+                            <div class="input-group input-group-lg mb-3">
+                                <input type="text" class="form-control" id="user_name" placeholder="User Name">
+                            </div>
+                            <div class="form-group">
+                                <button type="button" onclick="getKeys()" class="btn float-right login_btn" data-toggle="popover" title="Popover title" id="authenticate">Show Devices</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="d-flex justify-content-center h-100 card" id = "showCredentials"></div>
+        <pre id="log"></pre>
+        <script type="text/javascript" src="++plone++plone.webauthn/login.js" charset="utf8"></script>
+  </metal:block>
+  </metal:content-core>
+</body>
+</html>
