@@ -45,7 +45,7 @@ def post_install(context):
 
         log("- activating plugin interfaces")
         dgho_plugin = getattr(pas, PLUGIN_ID)
-        for interface_name in ("IAuthenticationPlugin",):
+        for interface_name in ("IAuthenticationPlugin", "IExtractionPlugin"):
             iface = plugin_manager._getInterfaceFromName(interface_name)
             try:
                 plugin_manager.activatePlugin(iface, PLUGIN_ID)

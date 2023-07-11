@@ -4,6 +4,7 @@ from BTrees.OOBTree import OOBTree
 from OFS.Cache import Cacheable
 from Products.PageTemplates.PageTemplateFile import PageTemplateFile
 from Products.PluggableAuthService.interfaces.plugins import IAuthenticationPlugin
+from Products.PluggableAuthService.interfaces.plugins import IExtractionPlugin
 from Products.PluggableAuthService.plugins.BasePlugin import BasePlugin
 from Products.PluggableAuthService.utils import classImplements
 from zope.annotation.interfaces import IAnnotations
@@ -57,12 +58,19 @@ class WebauthnPlugin(BasePlugin, Cacheable):
             all_annotations[KEY] = OOBTree()
         return all_annotations[KEY]
 
-    security.declarePrivate("authenticateCredentials")
+    security.declarePrivate("extractCredentials")
+    def extractCredentials(self, request):
+        print("ExtractCredentials")
+        print(request.BODY)
+        return {"login": "ajung", "password": "yyyy"}
+        return { "login" : login, "password" : password }
 
-    def authenticateCredentials(self, credentials):
+    security.declarePrivate("authenticateCredentials")
+    def authenticateCredentials(self, credentials, request=None):
         """Find out if the login and password is correct"""
 
-        print(self.request)
+        print("authenticateCredentials()")
+        print(request==None)
 
         print("Webauthn credentials:", credentials)
         return None
@@ -72,4 +80,5 @@ class WebauthnPlugin(BasePlugin, Cacheable):
 classImplements(
     WebauthnPlugin,
     IAuthenticationPlugin,
+    IExtractionPlugin,
 )
