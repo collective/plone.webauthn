@@ -66,12 +66,10 @@ class WebauthnPlugin(BasePlugin, Cacheable):
         return { "login" : login, "password" : password }
 
     security.declarePrivate("authenticateCredentials")
-    def authenticateCredentials(self, credentials, request=None):
+    def authenticateCredentials(self, credentials):
         """Find out if the login and password is correct"""
 
         print("authenticateCredentials()")
-        print(request==None)
-
         print("Webauthn credentials:", credentials)
         return None
         return (login, login)
