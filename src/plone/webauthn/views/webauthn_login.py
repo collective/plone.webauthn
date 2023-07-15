@@ -74,11 +74,13 @@ class WebAuthnLogin(BrowserView):
 
         return json.dumps(data)
     
-    def verify_device_for_login(self):
+    def verify_device_for_login(self, body):
         alsoProvides(self.request, IDisableCSRFProtection)
 
-        user_id = self.request["user_id"]
-        cname = self.request["cname"]
+        data = json.loads(body.decode('utf-8'))
+
+        user_id = data["user_id"]
+        cname = data["cname"]
         data_base = IKeyData(self.context)
         user_creds = data_base.get_user_device_key(user_id, cname)
 

@@ -33,6 +33,8 @@ async function post(path, creds, challenge, user_id, cname) {
     const {attestationObject, clientDataJSON, signature, authenticatorData} = creds.response;
     
     const data = {
+      user_id: user_id,
+      cname: cname,
       id: creds.id,
       raw_id: asBase64(creds.rawId),
       response: {
@@ -48,7 +50,7 @@ async function post(path, creds, challenge, user_id, cname) {
       data.response.authenticatorData = asBase64(authenticatorData);
     }
 
-    const r2 = await fetch(`Plone/login?user_id=${user_id}&cname=${cname}`, {
+    const r2 = await fetch(`Plone/login`, {
       method: 'POST',
       body: JSON.stringify(data),
       headers: {'content-type': 'application/json'}

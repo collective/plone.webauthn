@@ -11,6 +11,7 @@ from zope.annotation.interfaces import IAnnotations
 
 import os
 
+from .views.webauthn_login import IWebAuthnLogin
 
 KEY = "plone.webauthn.keys"
 
@@ -62,6 +63,10 @@ class WebauthnPlugin(BasePlugin, Cacheable):
     def extractCredentials(self, request):
         print("ExtractCredentials")
         print(request.BODY)
+        self.authenticateCredentials(request.BODY)
+
+        return None
+
         return {"login": "ajung", "password": "yyyy"}
         return { "login" : login, "password" : password }
 
@@ -71,6 +76,11 @@ class WebauthnPlugin(BasePlugin, Cacheable):
 
         print("authenticateCredentials()")
         print("Webauthn credentials:", credentials)
+
+        login_handler = IWebAuthnLogin()
+
+        print("result: ", login_handler.verify_device_for_login(credentials))
+
         return None
         return (login, login)
 
