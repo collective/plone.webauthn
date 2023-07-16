@@ -77,6 +77,8 @@ class WebAuthnLogin(BrowserView):
     def verify_device_for_login(self, body):
         alsoProvides(self.request, IDisableCSRFProtection)
 
+        print(data)
+
         data = json.loads(body.decode('utf-8'))
 
         user_id = data["user_id"]

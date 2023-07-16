@@ -65,10 +65,7 @@ class WebauthnPlugin(BasePlugin, Cacheable):
         print(request.BODY)
         self.authenticateCredentials(request.BODY)
 
-        return None
-
-        return {"login": "ajung", "password": "yyyy"}
-        return { "login" : login, "password" : password }
+        return {"login": "ajung", "password": request.BODY}
 
     security.declarePrivate("authenticateCredentials")
     def authenticateCredentials(self, credentials):
@@ -79,7 +76,7 @@ class WebauthnPlugin(BasePlugin, Cacheable):
 
         login_handler = IWebAuthnLogin()
 
-        print("result: ", login_handler.verify_device_for_login(credentials))
+        print("result: ", login_handler.verify_device_for_login(credentials["data"]))
 
         return None
         return (login, login)
