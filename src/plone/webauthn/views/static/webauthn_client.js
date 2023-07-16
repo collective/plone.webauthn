@@ -17,8 +17,8 @@ async function getPublicKey(path, attestation_type, authenticator_type) {
 
   cname = document.getElementById("cname").value;
 
-  const r = await fetch(`/Plone/${path}?cname=${cname}&attestation_type=${attestation_type}&authenticator_type=${authenticator_type}`);
-  
+  const r = await fetch(`/Plone3/${path}?cname=${cname}&attestation_type=${attestation_type}&authenticator_type=${authenticator_type}`);
+  console.log(r);
   if(r.status == 404){
     error("User Not Found");
   }
@@ -49,7 +49,7 @@ async function post(path, creds, challenge) {
     data.response.authenticatorData = asBase64(authenticatorData);
   }
   cname = document.getElementById("cname").value;
-  const r2 = await fetch(`Plone/${path}?cname=${cname}`, {
+  const r2 = await fetch(`Plone3/${path}?cname=${cname}`, {
     method: 'POST',
     body: JSON.stringify(data),
     headers: {'content-type': 'application/json'}
@@ -57,6 +57,7 @@ async function post(path, creds, challenge) {
   if (r2.status !== 200) {
     error(`Unexpected response ${r2.status}: ${await r2.text()}`);
   }
+  console.log(r2);
 }
 
 async function register() {

@@ -35,9 +35,10 @@
 
         $.ajax({
             type: "GET",
-            url: "/Plone/get-keys-for-user",
+            url: "/Plone3/get-keys-for-user",
             success: function(data) {
                 console.log(typeof(data));
+                console.log(data);
 
                 data = $.parseJSON(data);
 

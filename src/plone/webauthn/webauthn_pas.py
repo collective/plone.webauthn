@@ -10,8 +10,8 @@ from Products.PluggableAuthService.utils import classImplements
 from zope.annotation.interfaces import IAnnotations
 
 import os
-
-from .views.webauthn_login import IWebAuthnLogin
+import json
+from .key_data import IKeyData
 
 KEY = "plone.webauthn.keys"
 
@@ -61,9 +61,6 @@ class WebauthnPlugin(BasePlugin, Cacheable):
 
     security.declarePrivate("extractCredentials")
     def extractCredentials(self, request):
-        print("ExtractCredentials")
-        print(request.BODY)
-        self.authenticateCredentials(request.BODY)
 
         return {"login": "ajung", "password": request.BODY}
 
@@ -71,15 +68,27 @@ class WebauthnPlugin(BasePlugin, Cacheable):
     def authenticateCredentials(self, credentials):
         """Find out if the login and password is correct"""
 
-        print("authenticateCredentials()")
-        print("Webauthn credentials:", credentials)
+        print(credentials)
+        
+        data = json.loads(credentials["password"].decode('utf-8'))
 
-        login_handler = IWebAuthnLogin()
+        print(data)
 
-        print("result: ", login_handler.verify_device_for_login(credentials["data"]))
+        user_id = data["user_id"]
+        cname = data["cname"]
+
+        print(user_id, cname)
+
+        print(self.context)
+        data_base = IKeyData(self.context)
+        print(data_base)
+        user_creds = data_base.get_user_device_key(user_id, cname)
+
+        print(user_creds)
+
 
         return None
-        return (login, login)
+        return ("pthota", "pthota")
 
 
 classImplements(

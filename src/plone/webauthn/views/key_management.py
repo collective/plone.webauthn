@@ -113,6 +113,8 @@ class KeyManagement(BrowserView):
     def add_device(self):
         alsoProvides(self.request, IDisableCSRFProtection)
 
+        print(self.request)
+
         data = json.loads(self.request["BODY"].decode('utf-8'))
         data["raw_id"] = base64.urlsafe_b64decode(data["raw_id"])
 
@@ -204,7 +206,9 @@ class KeyManagement(BrowserView):
 
         user_id = str(plone.api.user.get_current())
         cname = self.request["cname"]
+        print("here", self.context)
         data_base = IKeyData(self.context)
+        print(data_base)
         user_creds = data_base.get_user_device_key(user_id, cname)
 
         data = json.loads(self.request["BODY"].decode('utf-8'))
@@ -231,7 +235,6 @@ class KeyManagement(BrowserView):
             credential_public_key=user_creds["public_key"],
             credential_current_sign_count=user_creds["sign_count"],
         )
-        print(auth)
 
         data_base.update_key(user_id, cname, {"sign_count": auth.new_sign_count})
 

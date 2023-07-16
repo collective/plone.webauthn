@@ -16,7 +16,7 @@ const asBase64 = ab => btoa(String.fromCharCode(...new Uint8Array(ab)));
 
 async function getPublicKey(path, user_id, cname) {
   
-    const r = await fetch(`/Plone/${path}?user_id=${user_id}&cname=${cname}`);
+    const r = await fetch(`/Plone3/${path}?user_id=${user_id}&cname=${cname}`);
     
     if(r.status == 404){
       error("User Not Found");

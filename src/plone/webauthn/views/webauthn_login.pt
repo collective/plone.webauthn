@@ -34,7 +34,7 @@
 
         $.ajax({
             type: "GET",
-            url: "/Plone/get-keys-for-login?user_id=" + user_id,
+            url: "/Plone3/get-keys-for-login?user_id=" + user_id,
             success: function(data) {
                 console.log(typeof(data));
 
