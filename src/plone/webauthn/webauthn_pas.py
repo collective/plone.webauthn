@@ -49,6 +49,7 @@ class WebauthnPlugin(BasePlugin, Cacheable):
     def __init__(self, id, title=None):
         self._setId(id)
         self.title = title
+        annos = self.annotations # ensure that OOBTree is initialized properly
 
     @property
     def annotations(self):
