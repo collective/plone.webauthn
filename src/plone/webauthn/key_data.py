@@ -20,7 +20,7 @@ class KeyDataAdapter(object):
     @property
     def annotations(self):
         plugin = plone.api.portal.get().restrictedTraverse("acl_users/Webauthn_helper")
-        return getattr(plugin, KEY)
+        return plugin.annotations
 
     @property
     def keys(self):
