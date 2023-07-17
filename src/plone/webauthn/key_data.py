@@ -3,7 +3,8 @@ import plone.api
 from zope.annotation.interfaces import IAnnotations
 from BTrees.OOBTree import OOBTree
 
-LOG_KEY = 'plone.webauthn.connector.keydata'
+
+from .webauthn_pas import KEY
 
 class IKeyData(zope.interface.Interface):
     """ Marker interface for User """
@@ -19,10 +20,8 @@ class KeyDataAdapter(object):
 
     @property
     def annotations(self):
-        all_annotations = IAnnotations(self.context)
-        if LOG_KEY not in all_annotations:
-            all_annotations[LOG_KEY] = OOBTree()
-        return all_annotations[LOG_KEY]
+        plugin = plone.api.portal.get().restrictedTraverse("acl_users/Webauthn_helper")
+        return getattr(plugin, KEY)
 
     @property
     def keys(self):
