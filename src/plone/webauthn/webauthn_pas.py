@@ -10,7 +10,6 @@ from Products.PluggableAuthService.utils import classImplements
 
 import os
 import json
-from .key_data import IKeyData
 
 KEY = "__plone_webauthn"
 
@@ -53,7 +52,6 @@ class WebauthnPlugin(BasePlugin, Cacheable):
 
     @property
     def annotations(self):
-
         annotations = getattr(self, KEY, None)
         if annotations is None:
             setattr(self, KEY, OOBTree())
@@ -68,6 +66,9 @@ class WebauthnPlugin(BasePlugin, Cacheable):
     security.declarePrivate("authenticateCredentials")
     def authenticateCredentials(self, credentials):
         """Find out if the login and password is correct"""
+
+        # function local import for avoid circular imports
+        from .key_data import IKeyData
 
         print(credentials)
         

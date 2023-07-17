@@ -145,13 +145,6 @@ class KeyManagement(BrowserView):
 
         print("registration complete need to add to database.")
 
-        # wrong: self.context = your Plone site
-        # but you want to store the data on the object of the PAS Plugin
-        # import plone.api
-        # data_base = plone.api.portal.get().restrictedTraverse("acl_users/Webauthn_helper")
-        #data_base = IKeyData(plone.api.portal.get().restrictedTraverse("acl_users/Webauthn_helper"))
-        #TypeError: ('Could not adapt', <WebauthnPlugin at /Plone/acl_users/Webauthn_helper>, <InterfaceClass zope.annotation.interfaces.IAnnotations>)
-
         data_base = IKeyData(self.context)
         user_id = str(plone.api.user.get_current())
         cname = self.request["cname"]

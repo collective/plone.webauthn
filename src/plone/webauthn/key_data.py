@@ -1,6 +1,5 @@
 import zope.interface
 import plone.api
-from zope.annotation.interfaces import IAnnotations
 from BTrees.OOBTree import OOBTree
 
 
