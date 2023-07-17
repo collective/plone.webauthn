@@ -7,13 +7,12 @@ from Products.PluggableAuthService.interfaces.plugins import IAuthenticationPlug
 from Products.PluggableAuthService.interfaces.plugins import IExtractionPlugin
 from Products.PluggableAuthService.plugins.BasePlugin import BasePlugin
 from Products.PluggableAuthService.utils import classImplements
-from zope.annotation.interfaces import IAnnotations
 
 import os
 import json
 from .key_data import IKeyData
 
-KEY = "plone.webauthn.keys"
+KEY = "__plone_webauthn"
 
 
 prefix = os.path.basename(getConfiguration().clienthome)
@@ -54,10 +53,12 @@ class WebauthnPlugin(BasePlugin, Cacheable):
 
     @property
     def annotations(self):
-        all_annotations = IAnnotations(self)
-        if KEY not in all_annotations:
-            all_annotations[KEY] = OOBTree()
-        return all_annotations[KEY]
+
+        annotations = getattr(self, KEY, None)
+        if annotations is None:
+            setattr(self, KEY, OOBTree())
+            annotations = getattr(self, KEY)
+        return annotations
 
     security.declarePrivate("extractCredentials")
     def extractCredentials(self, request):
