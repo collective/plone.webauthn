@@ -32,10 +32,10 @@ class WebAuthnLogin(BrowserView):
 
         database = IKeyData(self.context)
 
-        if user_id not in list(database.keys.keys()):
+        if user_id not in list(database.annotations.keys()):
             return json.dumps([])
         
-        credential_names = list(database.keys[user_id].keys())
+        credential_names = list(database.annotations[user_id].keys())
 
         return json.dumps(credential_names)
     
@@ -46,10 +46,10 @@ class WebAuthnLogin(BrowserView):
 
         data_base = IKeyData(self.context)
 
-        if user_id not in data_base.keys.keys():
+        if user_id not in data_base.annotations.keys():
             return b'{"error": "No devices registered"}'
         else:
-            if cname not in data_base.keys[user_id].keys():
+            if cname not in data_base.annotations[user_id].keys():
                 return b'{"error": "No devices registered with the device name"}'
 
         user_creds = data_base.get_user_device_key(user_id, cname)

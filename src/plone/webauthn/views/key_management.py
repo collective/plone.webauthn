@@ -57,8 +57,6 @@ class IKeyManagement(Interface):
     """Marker Interface for IKeyManagement"""
 
 
-auth_database = {}
-
 @implementer(IKeyManagement)
 class KeyManagement(BrowserView):
     # If you want to define a template here, please remove the template from
@@ -80,8 +78,8 @@ class KeyManagement(BrowserView):
 
         data_base = IKeyData(self.context)
 
-        if user_id in list(data_base.keys.keys()):
-            if cname in list(data_base.keys[user_id].keys()):
+        if user_id in list(data_base.annotations.keys()):
+            if cname in list(data_base.annotations[user_id].keys()):
                 return b'{"error": "device already registered"}'
 
         public_key = webauthn.generate_registration_options(  # type: ignore
@@ -163,10 +161,10 @@ class KeyManagement(BrowserView):
 
         data_base = IKeyData(self.context)
 
-        if user_id not in data_base.keys.keys():
+        if user_id not in data_base.annotations.keys():
             return b'{"error": "No devices registered"}'
         else:
-            if cname not in data_base.keys[user_id].keys():
+            if cname not in data_base.annotations[user_id].keys():
                 return b'{"error": "No devices registered with the device name"}'
 
         user_creds = data_base.get_user_device_key(user_id, cname)
@@ -199,7 +197,6 @@ class KeyManagement(BrowserView):
 
         user_id = str(plone.api.user.get_current())
         cname = self.request["cname"]
-        print("here", self.context)
         data_base = IKeyData(self.context)
         print(data_base)
         user_creds = data_base.get_user_device_key(user_id, cname)
@@ -238,15 +235,16 @@ class KeyManagement(BrowserView):
 
         database = IKeyData(self.context)
 
-        if user_id not in list(database.keys.keys()):
+        if user_id not in list(database.annotations.keys()):
             return json.dumps([])
         
-        credential_names = list(database.keys[user_id].keys())
+        credential_names = list(database.annotations[user_id].keys())
 
         return json.dumps(credential_names)
     
     def delete_credential(self):
-        alsoProvides(self.request, IDisableCSRFProtection)
+
+        print("here", self.request)
         database = IKeyData(self.context)
 
         user_id = str(plone.api.user.get_current())
@@ -254,8 +252,8 @@ class KeyManagement(BrowserView):
 
         print(user_id,cname)
 
-        del database.keys[user_id][cname]
-        database.keys._p_changed = 1
+        del database.annotations[user_id][cname]
+        database.annotations._p_changed = 1
 
         return b"{message: deleted}"
         
@@ -264,13 +262,15 @@ class KeyManagement(BrowserView):
         alsoProvides(self.request, IDisableCSRFProtection)
         database = IKeyData(self.context)
 
-        for key in list(database.keys.keys()):
-            del database.keys[key]
+        user_id = str(plone.api.user.get_current())
 
-        print(list(database.keys.keys()))
+        for key in list(database.annotations.keys()):
+            del database.annotations[key]
 
-        for key in list(database.keys.keys()):
-            print(key, database.keys[key])
+        print(list(database.annotations.keys()))
+
+        for key in list(database.annotations.keys()):
+            print(key, database.annotations[key])
 
     def work(self):
         database = IKeyData(self.context)

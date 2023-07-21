@@ -13,6 +13,8 @@ import json
 
 KEY = "__plone_webauthn"
 
+from .key_data import IKeyData
+
 
 prefix = os.path.basename(getConfiguration().clienthome)
 
@@ -68,29 +70,16 @@ class WebauthnPlugin(BasePlugin, Cacheable):
     def authenticateCredentials(self, credentials):
         """Find out if the login and password is correct"""
 
-        # function local import for avoid circular imports
-        from .key_data import IKeyData
-
-        print(credentials)
+        # function local import for avoid circular import
         
         data = json.loads(credentials["password"].decode('utf-8'))
-
-        print(data)
 
         user_id = data["user_id"]
         cname = data["cname"]
 
         print(user_id, cname)
 
-        print(self.context)
-        data_base = IKeyData(self.context)
-        print(data_base)
-        user_creds = data_base.get_user_device_key(user_id, cname)
 
-        print(user_creds)
-
-
-        return None
         return ("pthota", "pthota")
 
 

@@ -13,18 +13,13 @@ class KeyDataAdapter(object):
     """ An adapter for storing user information as an annotation
         on a persistent object.
     """
-
     def __init__(self, context):
         self.context = context
 
     @property
     def annotations(self):
         plugin = plone.api.portal.get().restrictedTraverse("acl_users/Webauthn_helper")
-        return plugin.annotations
-
-    @property
-    def keys(self):
-        return self.annotations
+        return getattr(plugin, KEY)
     
     def get_user_device_key(self, user_id, cname):
         return self.annotations[user_id][cname]

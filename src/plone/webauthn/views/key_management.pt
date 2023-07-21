@@ -64,7 +64,7 @@
                         cname = this.parentNode.parentNode.childNodes[0].innerHTML;
                         $.ajax({
                             type: "GET",
-                            url: "/Plone/delete-credential?cname="+cname,
+                            url: "/Plone3/delete-credential?cname="+cname,
                             success: function(message) {
                                 console.log(message);
                                 getKeys();
