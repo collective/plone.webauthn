@@ -50,7 +50,7 @@ async function post(path, creds, challenge, user_id, cname) {
       data.response.authenticatorData = asBase64(authenticatorData);
     }
 
-    const r2 = await fetch(`Plone/login`, {
+    const r2 = await fetch(`Plone3/login`, {
       method: 'POST',
       body: JSON.stringify(data),
       headers: {'content-type': 'application/json'}

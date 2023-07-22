@@ -198,7 +198,6 @@ class KeyManagement(BrowserView):
         user_id = str(plone.api.user.get_current())
         cname = self.request["cname"]
         data_base = IKeyData(self.context)
-        print(data_base)
         user_creds = data_base.get_user_device_key(user_id, cname)
 
         data = json.loads(self.request["BODY"].decode('utf-8'))
@@ -216,6 +215,12 @@ class KeyManagement(BrowserView):
         )
         
         expected_challenge = base64.urlsafe_b64decode( data["challenge"])
+
+        print("##################################################################")
+        print(credentials)
+        print(expected_challenge)
+        print(user_creds)
+        print("########################################################")
 
         auth = webauthn.verify_authentication_response(  # type: ignore
             credential=credentials,

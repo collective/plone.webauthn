@@ -10,8 +10,8 @@ from Products.PluggableAuthService.utils import classImplements
 
 import os
 import json
-
-KEY = "__plone_webauthn"
+import base64
+import webauthn
 
 from .key_data import IKeyData
 
@@ -78,6 +78,47 @@ class WebauthnPlugin(BasePlugin, Cacheable):
         cname = data["cname"]
 
         print(user_id, cname)
+
+        data_base = IKeyData("nthg")
+        user_creds = data_base.get_user_device_key(user_id, cname)
+
+        print(data)
+
+        data["raw_id"] = base64.urlsafe_b64decode(data["raw_id"])
+        data["response"]["authenticator_data"] = data["response"]["authenticatorData"]
+        del data["response"]["authenticatorData"]
+
+        print(data)
+
+        for key in data["response"].keys():
+            data["response"][key] = base64.urlsafe_b64decode(data["response"][key])
+
+        print(data)
+
+        credentials = webauthn.helpers.structs.AuthenticationCredential(
+            id = data["id"],
+            raw_id = data["raw_id"],
+            response = data["response"]
+        )
+        
+        expected_challenge = base64.urlsafe_b64decode( data["challenge"])
+
+        print("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
+        print(credentials)
+        print(expected_challenge)
+        print(user_creds)
+        print("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
+
+        auth = webauthn.verify_authentication_response(  # type: ignore
+            credential=credentials,
+            expected_challenge=expected_challenge,
+            expected_rp_id="localhost",
+            expected_origin="http://localhost:8080",
+            credential_public_key=user_creds["public_key"],
+            credential_current_sign_count=user_creds["sign_count"],
+        )
+
+        data_base.update_key(user_id, cname, {"sign_count": auth.new_sign_count})
 
 
         return ("pthota", "pthota")

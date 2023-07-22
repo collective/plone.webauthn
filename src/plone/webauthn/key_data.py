@@ -3,7 +3,7 @@ import plone.api
 from BTrees.OOBTree import OOBTree
 
 
-from .webauthn_pas import KEY
+KEY = "__plone_webauthn"
 
 class IKeyData(zope.interface.Interface):
     """ Marker interface for User """
