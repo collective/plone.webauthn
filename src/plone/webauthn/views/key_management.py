@@ -267,20 +267,8 @@ class KeyManagement(BrowserView):
         alsoProvides(self.request, IDisableCSRFProtection)
         database = IKeyData(self.context)
 
-        user_id = str(plone.api.user.get_current())
+        database.remove_all()
 
-        for key in list(database.annotations.keys()):
-            del database.annotations[key]
-
-        print(list(database.annotations.keys()))
-
-        for key in list(database.annotations.keys()):
-            print(key, database.annotations[key])
-
-    def work(self):
-        database = IKeyData(self.context)
-        for key in list(database.keys.keys()):
-            print(key, database.keys[key])
         
 
 

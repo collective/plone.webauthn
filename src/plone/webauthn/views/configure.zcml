@@ -76,15 +76,6 @@
     />
 
   <browser:page
-    name="work"
-    for="*"
-    class=".key_management.KeyManagement"
-    permission="cmf.ManagePortal"
-    layer="plone.webauthn.interfaces.IPloneWebauthnLayer"
-    attribute="work"
-    />
-
-  <browser:page
     name="delete-all"
     for="*"
     class=".key_management.KeyManagement"

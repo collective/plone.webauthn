@@ -40,3 +40,13 @@ class KeyDataAdapter(object):
         for k, v in new_data.items():
             self.annotations[user_id][cname][k] = v
         
+        self.annotations._p_changed = 1
+
+    def remove_all(self):
+        for k in self.annotations.keys():
+            del self.annotations[k]
+        self.annotations._p_changed = 1
+
+
+    
+        
