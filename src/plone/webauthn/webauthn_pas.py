@@ -14,6 +14,7 @@ import base64
 import webauthn
 
 from .key_data import IKeyData
+from .key_data import KEY
 
 
 prefix = os.path.basename(getConfiguration().clienthome)

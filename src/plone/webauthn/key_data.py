@@ -43,8 +43,7 @@ class KeyDataAdapter(object):
         self.annotations._p_changed = 1
 
     def remove_all(self):
-        for k in self.annotations.keys():
-            del self.annotations[k]
+        self.annotations.clear()
         self.annotations._p_changed = 1
 
 

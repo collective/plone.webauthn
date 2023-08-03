@@ -27,15 +27,21 @@
   
   <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
   <script>
+    var siteName;
     $(document).ready(function(){
-        getKeys();
+        ele = document.getElementById("visual-portal-wrapper");
+        siteName = ele.getAttribute("data-base-url").substring(22);
+
+        console.log("siteName : " + siteName);
+
+       getKeys();
     });
 
     function getKeys(){
 
         $.ajax({
             type: "GET",
-            url: "/Plone3/get-keys-for-user",
+            url: siteName + "/get-keys-for-user",
             success: function(data) {
                 console.log(typeof(data));
                 console.log(data);
@@ -64,7 +70,7 @@
                         cname = this.parentNode.parentNode.childNodes[0].innerHTML;
                         $.ajax({
                             type: "GET",
-                            url: "/Plone3/delete-credential?cname="+cname,
+                            url: siteName + "/delete-credential?cname="+cname,
                             success: function(message) {
                                 console.log(message);
                                 getKeys();

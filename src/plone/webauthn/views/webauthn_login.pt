@@ -27,14 +27,19 @@
 
   <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
   <script>
+    var siteName;
 
     function getKeys(){
 
         user_id = document.getElementById("user_name").value;
+        ele = document.getElementById("visual-portal-wrapper");
+        siteName = ele.getAttribute("data-base-url").substring(22);
+
+        console.log("siteName : " + siteName);
 
         $.ajax({
             type: "GET",
-            url: "/Plone3/get-keys-for-login?user_id=" + user_id,
+            url: siteName + "/get-keys-for-login?user_id=" + user_id,
             success: function(data) {
                 console.log(typeof(data));
 

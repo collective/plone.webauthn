@@ -16,7 +16,7 @@ const asBase64 = ab => btoa(String.fromCharCode(...new Uint8Array(ab)));
 
 async function getPublicKey(path, user_id, cname) {
   
-    const r = await fetch(`/Plone3/${path}?user_id=${user_id}&cname=${cname}`);
+    const r = await fetch(`${siteName}/${path}?user_id=${user_id}&cname=${cname}`);
     
     if(r.status == 404){
       error("User Not Found");
@@ -50,7 +50,7 @@ async function post(path, creds, challenge, user_id, cname) {
       data.response.authenticatorData = asBase64(authenticatorData);
     }
 
-    const r2 = await fetch(`Plone3/login`, {
+    const r2 = await fetch(`${siteName}/login`, {
       method: 'POST',
       body: JSON.stringify(data),
       headers: {'content-type': 'application/json'}
