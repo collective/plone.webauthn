@@ -7,6 +7,9 @@ from Products.PluggableAuthService.interfaces.plugins import IAuthenticationPlug
 from Products.PluggableAuthService.interfaces.plugins import IExtractionPlugin
 from Products.PluggableAuthService.plugins.BasePlugin import BasePlugin
 from Products.PluggableAuthService.utils import classImplements
+from zope.interface import Interface
+from zope.interface import alsoProvides
+from plone.protect.interfaces import IDisableCSRFProtection
 
 import os
 import json
@@ -70,7 +73,9 @@ class WebauthnPlugin(BasePlugin, Cacheable):
     security.declarePrivate("authenticateCredentials")
     def authenticateCredentials(self, credentials):
         """Find out if the login and password is correct"""
+        alsoProvides(self.request, IDisableCSRFProtection)
 
+        import pdb; pdb.set_trace() 
         # function local import for avoid circular import
         
         data = json.loads(credentials["password"].decode('utf-8'))
@@ -120,7 +125,6 @@ class WebauthnPlugin(BasePlugin, Cacheable):
         )
 
         data_base.update_key(user_id, cname, {"sign_count": auth.new_sign_count})
-
 
         return ("pthota", "pthota")
 
