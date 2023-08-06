@@ -64,6 +64,7 @@ class WebauthnPlugin(BasePlugin, Cacheable):
 
     security.declarePrivate("extractCredentials")
     def extractCredentials(self, request):
+        print(request)
 
         return {"login": "ajung", "password": request.BODY}
 
@@ -119,7 +120,7 @@ class WebauthnPlugin(BasePlugin, Cacheable):
             credential_current_sign_count=user_creds["sign_count"],
         )
 
-        data_base.update_key(user_id, cname, {"sign_count": auth.new_sign_count})
+        #data_base.update_key(user_id, cname, {"sign_count": auth.new_sign_count})
 
 
         return ("pthota", "pthota")
