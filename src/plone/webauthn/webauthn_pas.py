@@ -74,33 +74,21 @@ class WebauthnPlugin(BasePlugin, Cacheable):
     security.declarePrivate("authenticateCredentials")
     def authenticateCredentials(self, credentials):
         """Find out if the login and password is correct"""
-        alsoProvides(self.request, IDisableCSRFProtection)
-
-        import pdb; pdb.set_trace() 
-        # function local import for avoid circular import
         
         data = json.loads(credentials["password"].decode('utf-8'))
 
         user_id = data["user_id"]
         cname = data["cname"]
 
-        print(user_id, cname)
-
         data_base = IKeyData("nthg")
         user_creds = data_base.get_user_device_key(user_id, cname)
-
-        print(data)
 
         data["raw_id"] = base64.urlsafe_b64decode(data["raw_id"])
         data["response"]["authenticator_data"] = data["response"]["authenticatorData"]
         del data["response"]["authenticatorData"]
 
-        print(data)
-
         for key in data["response"].keys():
             data["response"][key] = base64.urlsafe_b64decode(data["response"][key])
-
-        print(data)
 
         credentials = webauthn.helpers.structs.AuthenticationCredential(
             id = data["id"],
@@ -127,7 +115,7 @@ class WebauthnPlugin(BasePlugin, Cacheable):
 
         #data_base.update_key(user_id, cname, {"sign_count": auth.new_sign_count})
 
-        return ("pthota", "pthota")
+        return (user_id, user_id)
 
 
 classImplements(
