@@ -5,7 +5,6 @@ function log(...messages) {
 }
 
 function error(message) {
-  console.error(message);
   log_el.innerText += '\n' + message;
   throw Error('got error:' + message);
 }
@@ -55,7 +54,6 @@ async function post(path, creds, challenge, user_id, cname) {
       body: JSON.stringify(data),
       headers: {'content-type': 'application/json'}
     });
-    console.log(r2);
     if (r2.status !== 200) {
       error(`Unexpected response ${r2.status}: ${await r2.text()}`);
     }
@@ -74,8 +72,6 @@ async function authenticator(user_id, cname) {
     publicKey.challenge = asArrayBuffer(publicKey.challenge);
     publicKey.allow_credentials[0].id = asArrayBuffer(publicKey.allow_credentials[0].id);
     delete publicKey.allow_credentials[0].transports;
-  
-    //console.log(publicKey);
     
     let creds;
     try {

@@ -5,7 +5,6 @@ function log(...messages) {
 }
 
 function error(message) {
-  console.error(message);
   log_el.innerText += '\n' + message;
   throw Error('got error:' + message);
 }
@@ -18,7 +17,6 @@ async function getPublicKey(path, attestation_type, authenticator_type) {
   cname = document.getElementById("cname").value;
 
   const r = await fetch(`/${siteName}/${path}?cname=${cname}&attestation_type=${attestation_type}&authenticator_type=${authenticator_type}`);
-  console.log(r);
   if(r.status == 404){
     error("User Not Found");
   }
@@ -57,7 +55,6 @@ async function post(path, creds, challenge) {
   if (r2.status !== 200) {
     error(`Unexpected response ${r2.status}: ${await r2.text()}`);
   }
-  console.log(r2);
 }
 
 async function register() {
@@ -69,8 +66,6 @@ async function register() {
     alert(publicKey.error);
     return;
   }
-
-  //console.log('register get response:', publicKey);
   
   publicKey.user.id = asArrayBuffer(publicKey.user.id);
   publicKey.challenge = asArrayBuffer(publicKey.challenge);
@@ -107,8 +102,6 @@ async function authenticator() {
   publicKey.challenge = asArrayBuffer(publicKey.challenge);
   publicKey.allow_credentials[0].id = asArrayBuffer(publicKey.allow_credentials[0].id);
   delete publicKey.allow_credentials[0].transports;
-
-  //console.log(publicKey);
   
   let creds;
   try {

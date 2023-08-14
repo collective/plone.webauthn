@@ -40,24 +40,6 @@
     />
 
   <browser:page
-    name="get-authentication-options"
-    for="*"
-    class=".key_management.KeyManagement"
-    permission="cmf.SetOwnProperties"
-    layer="plone.webauthn.interfaces.IPloneWebauthnLayer"
-    attribute="get_authentication_options"
-    />
-
-  <browser:page
-    name="verify-device"
-    for="*"
-    class=".key_management.KeyManagement"
-    permission="cmf.SetOwnProperties"
-    layer="plone.webauthn.interfaces.IPloneWebauthnLayer"
-    attribute="verify_device"
-    />
-
-  <browser:page
     name="get-keys-for-user"
     for="*"
     class=".key_management.KeyManagement"
