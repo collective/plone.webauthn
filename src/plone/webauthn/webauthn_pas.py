@@ -24,7 +24,7 @@ prefix = os.path.basename(getConfiguration().clienthome)
 
 
 manage_addWebauthnPluginForm = PageTemplateFile(
-    "www/Add", globals(), __name__="manage_addWebauthnPluginForm"
+    "www/Add", globals(), __name__= "manage_addWebauthnPluginForm"
 )
 
 
@@ -98,20 +98,17 @@ class WebauthnPlugin(BasePlugin, Cacheable):
         
         expected_challenge = base64.urlsafe_b64decode( data["challenge"])
 
-        print("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
-        print(credentials)
-        print(expected_challenge)
-        print(user_creds)
-        print("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
-
-        auth = webauthn.verify_authentication_response(  # type: ignore
-            credential=credentials,
-            expected_challenge=expected_challenge,
-            expected_rp_id="localhost",
-            expected_origin="http://localhost:8080",
-            credential_public_key=user_creds["public_key"],
-            credential_current_sign_count=user_creds["sign_count"],
-        )
+        try:
+            auth = webauthn.verify_authentication_response(  # type: ignore
+                credential=credentials,
+                expected_challenge=expected_challenge,
+                expected_rp_id="localhost",
+                expected_origin="http://localhost:8080",
+                credential_public_key=user_creds["public_key"],
+                credential_current_sign_count=user_creds["sign_count"],
+            )
+        except:
+            return (None, None)
 
         #data_base.update_key(user_id, cname, {"sign_count": auth.new_sign_count})
 

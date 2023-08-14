@@ -53,18 +53,21 @@ class WebAuthnLogin(BrowserView):
                 return b'{"error": "No devices registered with the device name"}'
 
         user_creds = data_base.get_user_device_key(user_id, cname)
-        
-        public_key = webauthn.generate_authentication_options(  # type: ignore
-            rp_id="localhost",
-            timeout=50000,
-            allow_credentials=[
-                PublicKeyCredentialDescriptor(
-                    type=PublicKeyCredentialType.PUBLIC_KEY,
-                    id=user_creds["credential_id"],
+
+        try:
+            public_key = webauthn.generate_authentication_options(  # type: ignore
+                rp_id="localhost",
+                timeout=50000,
+                allow_credentials=[
+                    PublicKeyCredentialDescriptor(
+                        type=PublicKeyCredentialType.PUBLIC_KEY,
+                        id=user_creds["credential_id"],
+                    )
+                ],
+                user_verification=UserVerificationRequirement.DISCOURAGED,
                 )
-            ],
-            user_verification=UserVerificationRequirement.DISCOURAGED,
-            )
+        except:
+            return b'{"error": "generating authentication options failed"}'
         
         self.request.response.setHeader("Content-type", "application/json")
 

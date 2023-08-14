@@ -35,13 +35,10 @@
         ele = document.getElementById("visual-portal-wrapper");
         siteName = ele.getAttribute("data-base-url").substring(22);
 
-        console.log("siteName : " + siteName);
-
         $.ajax({
             type: "GET",
             url: siteName + "/get-keys-for-login?user_id=" + user_id,
             success: function(data) {
-                console.log(typeof(data));
 
                 data = $.parseJSON(data);
 
