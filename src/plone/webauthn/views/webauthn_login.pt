@@ -116,7 +116,7 @@
                 <input type="text" id="form_user_name" name="form_user_name">
                 <input type="text" id="form_cname" name="form_cname">
                 <input type="text" id="form_data" name="form_data">
-                <input type="submit" id="login_submit" value="Submit">
+                <button type="submit" id="buttons-login" name="buttons.login" value="Log in">Log in</button>
             </form>
         </div>
         <pre id="log"></pre>

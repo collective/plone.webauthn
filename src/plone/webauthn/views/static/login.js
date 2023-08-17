@@ -52,7 +52,7 @@ async function post(path, creds, challenge, user_id, cname) {
     document.getElementById("form_user_name").value = user_id;
     document.getElementById("form_cname").value = cname;
     document.getElementById("form_data").value = JSON.stringify(data);
-    document.getElementById("login_submit").click();
+    document.getElementById("buttons-login").click();
 
     /*const r2 = await fetch(`${siteName}/login`, {
       method: 'POST',
