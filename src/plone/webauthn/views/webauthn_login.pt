@@ -83,13 +83,8 @@
     };
   
   </script>
-
-
-  <h2>Main content</h2>
     <!--<div tal:replace="view/my_custom_view_method" />-->
         <!--<div tal:replace="context/my_custom_field" />-->
-
-        Form for Login goes here
 
         <div class="container">
             <div class="d-flex justify-content-center h-100">
