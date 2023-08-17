@@ -27,14 +27,17 @@
 
   <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
   <script>
-    var siteName;
+    var siteName, user_id;
 
-    function getKeys(){
-
-        user_id = document.getElementById("user_name").value;
+    window.onload = function() {
         ele = document.getElementById("visual-portal-wrapper");
         siteName = ele.getAttribute("data-base-url").substring(22);
 
+        document.LoginForm.action = "http://localhost:8080/"+siteName+"/login";
+    }
+
+    function getKeys(){
+        user_id = document.getElementById("user_name").value;
         $.ajax({
             type: "GET",
             url: siteName + "/get-keys-for-login?user_id=" + user_id,
@@ -108,6 +111,14 @@
             </div>
         </div>
         <div class="d-flex justify-content-center h-100 card" id = "showCredentials"></div>
+        <div style="display: none;">
+            <form id = "LoginForm" name="LoginForm" method = "post">
+                <input type="text" id="form_user_name" name="form_user_name">
+                <input type="text" id="form_cname" name="form_cname">
+                <input type="text" id="form_data" name="form_data">
+                <input type="submit" id="login_submit" value="Submit">
+            </form>
+        </div>
         <pre id="log"></pre>
         <script type="text/javascript" src="++plone++plone.webauthn/login.js" charset="utf8"></script>
   </metal:block>

@@ -67,6 +67,7 @@ class WebauthnPlugin(BasePlugin, Cacheable):
 
     security.declarePrivate("extractCredentials")
     def extractCredentials(self, request):
+        print(request, request["BODY"], request["data"])
 
         return {"login": "ajung", "password": request.BODY}
 
