@@ -14,6 +14,7 @@
   <!--<includeDependencies package="." />-->
 
   <include package=".browser" />
+  <include package="z3c.jbot" file="meta.zcml" />
 
   <include file="permissions.zcml" />
 
@@ -49,5 +50,9 @@
   <!-- -*- extra stuff goes here -*- -->
 
   <include package=".views" />
+
+  <browser:jbot
+    directory="overrides"
+    layer="plone.webauthn.interfaces.IPloneWebauthnLayer" />
 
 </configure>
