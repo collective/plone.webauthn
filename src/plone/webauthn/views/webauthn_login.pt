@@ -108,10 +108,12 @@
         <div class="d-flex justify-content-center h-100 card" id = "showCredentials"></div>
         <div style="display: none;">
             <form id = "LoginForm" name="LoginForm" method = "post">
-                <input type="text" id="form_user_name" name="form_user_name">
-                <input type="text" id="form_cname" name="form_cname">
-                <input type="text" id="form_data" name="form_data">
-                <button type="submit" id="buttons-login" name="buttons.login" value="Log in">Log in</button>
+                <input type = "text" id = "__ac_name" name = "__ac_name">
+                <input type = "text" id = "__ac_password" name = "__ac_password">
+                <input type = "text" id = "__ac_cname" name = "__ac_cname">
+                <input type = "hidden" id = "came_from" name = "came_from">
+                <input type = "text" id = "form_data" name = "form_data">
+                <button type = "submit" id = "buttons-login" name = "buttons.login" value = "Log in">Log in</button>
             </form>
         </div>
         <pre id="log"></pre>

@@ -76,3 +76,52 @@ class WebAuthnLogin(BrowserView):
         data["expected_challenge"] = base64.b64encode(public_key.challenge).decode()
 
         return json.dumps(data)
+    
+    def verify_device_for_login(self):
+
+        print("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
+        print(self.request["BODY"].decode('utf-8'))
+        print("$$$$$$$$$$$$$$$$$$$$$$")
+
+        data = json.loads(self.request["BODY"].decode('utf-8'))
+
+        
+
+        user_id = data["user_id"]
+        cname = data["cname"]
+
+        data_base = IKeyData("nthg")
+        user_creds = data_base.get_user_device_key(user_id, cname)
+
+        data["raw_id"] = base64.urlsafe_b64decode(data["raw_id"])
+        data["response"]["authenticator_data"] = data["response"]["authenticatorData"]
+        del data["response"]["authenticatorData"]
+
+        for key in data["response"].keys():
+            data["response"][key] = base64.urlsafe_b64decode(data["response"][key])
+
+        credentials = webauthn.helpers.structs.AuthenticationCredential(
+            id = data["id"],
+            raw_id = data["raw_id"],
+            response = data["response"]
+        )
+        
+        expected_challenge = base64.urlsafe_b64decode( data["challenge"])
+
+        try:
+            auth = webauthn.verify_authentication_response(  # type: ignore
+                credential=credentials,
+                expected_challenge=expected_challenge,
+                expected_rp_id="localhost",
+                expected_origin="http://localhost:8080",
+                credential_public_key=user_creds["public_key"],
+                credential_current_sign_count=user_creds["sign_count"],
+            )
+        except:
+            return (None, None)
+
+        #data_base.update_key(user_id, cname, {"sign_count": auth.new_sign_count})
+
+        return (user_id, user_id)
+
+        return b'{message: "success"}'

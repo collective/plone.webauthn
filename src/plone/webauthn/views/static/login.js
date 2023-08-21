@@ -49,19 +49,21 @@ async function post(path, creds, challenge, user_id, cname) {
       data.response.authenticatorData = asBase64(authenticatorData);
     }
 
-    document.getElementById("form_user_name").value = user_id;
-    document.getElementById("form_cname").value = cname;
+    document.getElementById("__ac_name").value = user_id;
+    document.getElementById("__ac_password").value = "webauthn";
+    document.getElementById("__ac_cname").value = cname;
+    document.getElementById("came_from").value = "http://localhost:8080/"+siteName;
     document.getElementById("form_data").value = JSON.stringify(data);
     document.getElementById("buttons-login").click();
 
-    /*const r2 = await fetch(`${siteName}/login`, {
+    const r2 = await fetch(`${siteName}/${path}`, {
       method: 'POST',
       body: JSON.stringify(data),
       headers: {'content-type': 'application/json'}
     });
     if (r2.status !== 200) {
       error(`Unexpected response ${r2.status}: ${await r2.text()}`);
-    }*/
+    }
 }
 
 

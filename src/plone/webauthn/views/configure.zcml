@@ -93,4 +93,13 @@
     attribute="get_authentication_options_for_login"
     />
 
+  <browser:page
+    name="verify-device-for-login"
+    for="*"
+    class=".webauthn_login.WebAuthnLogin"
+    permission="zope2.View"
+    layer="plone.webauthn.interfaces.IPloneWebauthnLayer"
+    attribute="verify_device_for_login"
+    />
+
 </configure>
