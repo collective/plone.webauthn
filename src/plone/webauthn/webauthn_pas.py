@@ -73,7 +73,6 @@ class WebauthnPlugin(BasePlugin, Cacheable):
     security.declarePrivate("authenticateCredentials")
     def authenticateCredentials(self, credentials):
         """Find out if the login and password is correct"""
-        print("authenticate")
         data = credentials["password"].decode('utf-8')
         data = data[data.find("form_data")+len("form_data="): data.find("&buttons.login")]
 
@@ -87,12 +86,7 @@ class WebauthnPlugin(BasePlugin, Cacheable):
         data = data.replace("%2F", "/")
         data = data.replace("%7D", "}")
 
-        
-        print(data)
         data = json.loads(data)
-
-        print(data)
-
         user_id = data["user_id"]
         cname = data["cname"]
 

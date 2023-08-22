@@ -38,12 +38,24 @@
 
     function getKeys(){
         user_id = document.getElementById("user_name").value;
+
+        if(user_id == ""){
+            alert("Username cannot be empty");
+            return;
+        }
         $.ajax({
             type: "GET",
             url: siteName + "/get-keys-for-login?user_id=" + user_id,
             success: function(data) {
 
                 data = $.parseJSON(data);
+
+                var divContainer = document.getElementById("showCredentials");
+
+                if(data.length == 0){
+                    divContainer.innerHTML = "No Registered webauthn Devices. Login using username and password to Register New Device";
+                    return;
+                }
 
                 var table = document.createElement('table');
 
@@ -73,11 +85,8 @@
                     tabcell2.append(btn);
                 }
 
-                var divContainer = document.getElementById("showCredentials");
                 divContainer.innerHTML = "";
                 divContainer.appendChild(table);
-
-
             }
         });
     };
