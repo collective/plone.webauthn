@@ -16,17 +16,17 @@ from webauthn.helpers.structs import (
     UserVerificationRequirement,
 )
 
+
 class IWebAuthnLogin(Interface):
     """Marker Interface for IKeyManagement"""
 
 
 @implementer(IWebAuthnLogin)
 class WebAuthnLogin(BrowserView):
-
     def __call__(self):
         # Implement your own actions:
         return self.index()
-    
+
     def get_keys_for_login(self):
         user_id = self.request["user_id"]
 
@@ -34,11 +34,11 @@ class WebAuthnLogin(BrowserView):
 
         if user_id not in list(database.annotations.keys()):
             return json.dumps([])
-        
+
         credential_names = list(database.annotations[user_id].keys())
 
         return json.dumps(credential_names)
-    
+
     def get_authentication_options_for_login(self):
         user_id = self.request["user_id"]
         cname = self.request["cname"]
@@ -65,10 +65,10 @@ class WebAuthnLogin(BrowserView):
                     )
                 ],
                 user_verification=UserVerificationRequirement.DISCOURAGED,
-                )
+            )
         except:
             return b'{"error": "generating authentication options failed"}'
-        
+
         self.request.response.setHeader("Content-type", "application/json")
 
         data = public_key.json()

@@ -24,7 +24,7 @@ prefix = os.path.basename(getConfiguration().clienthome)
 
 
 manage_addWebauthnPluginForm = PageTemplateFile(
-    "www/Add", globals(), __name__= "manage_addWebauthnPluginForm"
+    "www/Add", globals(), __name__="manage_addWebauthnPluginForm"
 )
 
 
@@ -55,7 +55,7 @@ class WebauthnPlugin(BasePlugin, Cacheable):
     def __init__(self, id, title=None):
         self._setId(id)
         self.title = title
-        annos = self.annotations # ensure that OOBTree is initialized properly
+        annos = self.annotations  # ensure that OOBTree is initialized properly
 
     @property
     def annotations(self):
@@ -66,19 +66,21 @@ class WebauthnPlugin(BasePlugin, Cacheable):
         return annotations
 
     security.declarePrivate("extractCredentials")
-    def extractCredentials(self, request):
 
+    def extractCredentials(self, request):
         return {"login": "ajung", "password": request.BODY}
 
     security.declarePrivate("authenticateCredentials")
+
     def authenticateCredentials(self, credentials):
         """Find out if the login and password is correct"""
-        data = credentials["password"].decode('utf-8')
-        data = data[data.find("form_data")+len("form_data="): data.find("&buttons.login")]
-
+        data = credentials["password"].decode("utf-8")
+        data = data[
+            data.find("form_data") + len("form_data=") : data.find("&buttons.login")
+        ]
 
         data = data.replace("%7B", "{")
-        data = data.replace("%22", "\"")
+        data = data.replace("%22", '"')
         data = data.replace("%3A", ":")
         data = data.replace("%2C", ",")
         data = data.replace("%2B", "+")
@@ -101,12 +103,10 @@ class WebauthnPlugin(BasePlugin, Cacheable):
             data["response"][key] = base64.urlsafe_b64decode(data["response"][key])
 
         credentials = webauthn.helpers.structs.AuthenticationCredential(
-            id = data["id"],
-            raw_id = data["raw_id"],
-            response = data["response"]
+            id=data["id"], raw_id=data["raw_id"], response=data["response"]
         )
-        
-        expected_challenge = base64.urlsafe_b64decode( data["challenge"])
+
+        expected_challenge = base64.urlsafe_b64decode(data["challenge"])
 
         try:
             auth = webauthn.verify_authentication_response(  # type: ignore
@@ -120,7 +120,7 @@ class WebauthnPlugin(BasePlugin, Cacheable):
         except:
             return (None, None)
 
-        #data_base.update_key(user_id, cname, {"sign_count": auth.new_sign_count})
+        # data_base.update_key(user_id, cname, {"sign_count": auth.new_sign_count})
 
         return (user_id, user_id)
 

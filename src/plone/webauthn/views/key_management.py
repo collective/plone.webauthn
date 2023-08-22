@@ -54,11 +54,10 @@ class KeyManagement(BrowserView):
     # the configure.zcml registration of this view.
     # template = ViewPageTemplateFile('key_management.pt')
 
-
     def __call__(self):
         # Implement your own actions:
         return self.index()
-    
+
     def get_registration_options(self):
         alsoProvides(self.request, IDisableCSRFProtection)
 
@@ -72,27 +71,25 @@ class KeyManagement(BrowserView):
         if user_id in list(data_base.annotations.keys()):
             if cname in list(data_base.annotations[user_id].keys()):
                 return b'{"error": "device already registered"}'
-            
+
         try:
             public_key = webauthn.generate_registration_options(  # type: ignore
-                rp_id = "localhost",
-                rp_name = "Plone",
-                user_id = cname,
-                user_name = user_id,
-                user_display_name = user_id+"-"+cname,
-                attestation = ATTESTATION_TYPE_MAPPING[attestation_type],
-                
+                rp_id="localhost",
+                rp_name="Plone",
+                user_id=cname,
+                user_name=user_id,
+                user_display_name=user_id + "-" + cname,
+                attestation=ATTESTATION_TYPE_MAPPING[attestation_type],
                 authenticator_selection=AuthenticatorSelectionCriteria(
-                authenticator_attachment=AUTH_MAPPING[authenticator_type]
-                if authenticator_type
-                else AuthenticatorAttachment.CROSS_PLATFORM,
-                resident_key=ResidentKeyRequirement.DISCOURAGED,
-                user_verification=UserVerificationRequirement.REQUIRED,
+                    authenticator_attachment=AUTH_MAPPING[authenticator_type]
+                    if authenticator_type
+                    else AuthenticatorAttachment.CROSS_PLATFORM,
+                    resident_key=ResidentKeyRequirement.DISCOURAGED,
+                    user_verification=UserVerificationRequirement.REQUIRED,
                 ),
             )
         except:
             return b'{"error": "generating registration options failed"}'
-
 
         self.request.response.setHeader("Content-type", "application/json")
 
@@ -101,31 +98,28 @@ class KeyManagement(BrowserView):
         data["expected_challenge"] = base64.b64encode(public_key.challenge).decode()
 
         return json.dumps(data)
-    
 
     def add_device(self):
         alsoProvides(self.request, IDisableCSRFProtection)
 
-        data = json.loads(self.request["BODY"].decode('utf-8'))
+        data = json.loads(self.request["BODY"].decode("utf-8"))
         data["raw_id"] = base64.urlsafe_b64decode(data["raw_id"])
 
         for key in data["response"].keys():
             data["response"][key] = base64.urlsafe_b64decode(data["response"][key])
 
         credentials = webauthn.helpers.structs.RegistrationCredential(
-            id = data["id"],
-            raw_id = data["raw_id"],
-            response = data["response"]
+            id=data["id"], raw_id=data["raw_id"], response=data["response"]
         )
 
-        expected_challenge = base64.urlsafe_b64decode( data["challenge"])
-        
+        expected_challenge = base64.urlsafe_b64decode(data["challenge"])
+
         try:
             registration = webauthn.verify_registration_response(  # type: ignore
-                credential = credentials,
-                expected_challenge = expected_challenge,
-                expected_rp_id = "localhost",
-                expected_origin = "http://localhost:8080",
+                credential=credentials,
+                expected_challenge=expected_challenge,
+                expected_rp_id="localhost",
+                expected_origin="http://localhost:8080",
             )
         except:
             return b'{"error": "verifying registration failed"}'
@@ -151,11 +145,11 @@ class KeyManagement(BrowserView):
 
         if user_id not in list(database.annotations.keys()):
             return json.dumps([])
-        
+
         credential_names = list(database.annotations[user_id].keys())
 
         return json.dumps(credential_names)
-    
+
     def delete_credential(self):
         database = IKeyData(self.context)
 
@@ -166,15 +160,9 @@ class KeyManagement(BrowserView):
         database.annotations._p_changed = 1
 
         return b"{message: deleted}"
-        
-    
+
     def delete_all(self):
         alsoProvides(self.request, IDisableCSRFProtection)
         database = IKeyData(self.context)
 
         database.remove_all()
-
-        
-
-
-
