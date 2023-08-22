@@ -6,12 +6,12 @@ from BTrees.OOBTree import OOBTree
 KEY = "__plone_webauthn"
 
 class IKeyData(zope.interface.Interface):
-    """ Marker interface for User """
+    """Marker interface for User"""
 
 @zope.interface.implementer(IKeyData)
 class KeyDataAdapter(object):
-    """ An adapter for storing user information as an annotation
-        on a persistent object.
+    """An adapter for storing user information as an annotation
+    on a persistent object.
     """
     def __init__(self, context):
         self.context = context
@@ -34,14 +34,13 @@ class KeyDataAdapter(object):
         self.annotations[user_id][cname] = data
         self.annotations._p_changed = 1
 
-    
     def update_key(self, user_id, cname, new_data):
 
         for k, v in new_data.items():
             self.annotations[user_id][cname][k] = v
         
         self.annotations._p_changed = 1
-
+        
     def remove_all(self):
         self.annotations.clear()
         self.annotations._p_changed = 1
