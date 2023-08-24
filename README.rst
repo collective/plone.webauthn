@@ -27,6 +27,14 @@
     :alt: License
 
 
+===================================
+Google Summer Of Code Final Report
+===================================
+Contributor - Pavan Kalyan Thota
+Mentor - Andreas Jung
+
+
+
 ==============
 plone.webauthn
 ==============
@@ -36,7 +44,8 @@ webauthn addon for plone
 Features
 --------
 
-- Can be bullet points
+- Register devices using Webauthn and use it later to authenticate without using a password.
+- Add or Delete Webauthn Credentials.
 
 
 Examples
@@ -49,7 +58,7 @@ This add-on can be seen in action at the following sites:
 Documentation
 -------------
 
-Full documentation for end users can be found in the "docs" folder, and is also available online at http://docs.plone.org/foo/bar
+Full documentation for end users can be found in the "docs" folder and is also available online at http://docs.plone.org/foo/bar
 
 
 Translations
@@ -96,7 +105,7 @@ Contributors
 
 Put your name here, you deserve it!
 
-- ?
+- Pavan Kalyan Thota
 
 
 Contribute
