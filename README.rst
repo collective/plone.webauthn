@@ -26,15 +26,6 @@
     :target: https://pypi.python.org/pypi/plone.webauthn/
     :alt: License
 
-
-===================================
-Google Summer Of Code Final Report
-===================================
-Contributor - Pavan Kalyan Thota
-Mentor - Andreas Jung
-
-
-
 ==============
 plone.webauthn
 ==============
