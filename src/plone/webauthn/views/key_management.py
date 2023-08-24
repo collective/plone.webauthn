@@ -1,32 +1,29 @@
 # -*- coding: utf-8 -*-
 
 # from plone.webauthn import _
+from ..key_data import IKeyData
+from plone.protect.interfaces import IDisableCSRFProtection
 from Products.Five.browser import BrowserView
+from webauthn.helpers.structs import AttestationConveyancePreference
+from webauthn.helpers.structs import AuthenticationCredential
+from webauthn.helpers.structs import AuthenticatorAttachment
+from webauthn.helpers.structs import AuthenticatorSelectionCriteria
+from webauthn.helpers.structs import PublicKeyCredentialCreationOptions
+from webauthn.helpers.structs import PublicKeyCredentialDescriptor
+from webauthn.helpers.structs import PublicKeyCredentialRequestOptions
+from webauthn.helpers.structs import PublicKeyCredentialType
+from webauthn.helpers.structs import RegistrationCredential
+from webauthn.helpers.structs import ResidentKeyRequirement
+from webauthn.helpers.structs import UserVerificationRequirement
+from zope.interface import alsoProvides
 from zope.interface import implementer
 from zope.interface import Interface
-from zope.interface import alsoProvides
-from plone.protect.interfaces import IDisableCSRFProtection
 
-import json
-import webauthn
 import base64
+import json
 import plone.api
+import webauthn
 
-from webauthn.helpers.structs import (
-    AttestationConveyancePreference,
-    AuthenticationCredential,
-    AuthenticatorAttachment,
-    AuthenticatorSelectionCriteria,
-    PublicKeyCredentialCreationOptions,
-    PublicKeyCredentialDescriptor,
-    PublicKeyCredentialRequestOptions,
-    PublicKeyCredentialType,
-    RegistrationCredential,
-    ResidentKeyRequirement,
-    UserVerificationRequirement,
-)
-
-from ..key_data import IKeyData
 
 ATTESTATION_TYPE_MAPPING = {
     "none": AttestationConveyancePreference.NONE,

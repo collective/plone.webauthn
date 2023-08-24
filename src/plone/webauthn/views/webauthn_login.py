@@ -1,20 +1,16 @@
+from ..key_data import IKeyData
+from plone.protect.interfaces import IDisableCSRFProtection
+from Products.Five.browser import BrowserView
+from webauthn.helpers.structs import PublicKeyCredentialDescriptor
+from webauthn.helpers.structs import PublicKeyCredentialType
+from webauthn.helpers.structs import UserVerificationRequirement
+from zope.interface import alsoProvides
 from zope.interface import implementer
 from zope.interface import Interface
-from Products.Five.browser import BrowserView
-from zope.interface import alsoProvides
-from plone.protect.interfaces import IDisableCSRFProtection
 
-from ..key_data import IKeyData
-import json
 import base64
-import plone.api
+import json
 import webauthn
-
-from webauthn.helpers.structs import (
-    PublicKeyCredentialDescriptor,
-    PublicKeyCredentialType,
-    UserVerificationRequirement,
-)
 
 
 class IWebAuthnLogin(Interface):

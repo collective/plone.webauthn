@@ -1,6 +1,7 @@
-import zope.interface
-import plone.api
 from BTrees.OOBTree import OOBTree
+
+import plone.api
+import zope.interface
 
 
 KEY = "__plone_webauthn"

@@ -1,23 +1,22 @@
+from .key_data import IKeyData
+from .key_data import KEY
 from AccessControl.SecurityInfo import ClassSecurityInfo
 from App.config import getConfiguration
 from BTrees.OOBTree import OOBTree
 from OFS.Cache import Cacheable
+from plone.protect.interfaces import IDisableCSRFProtection
 from Products.PageTemplates.PageTemplateFile import PageTemplateFile
 from Products.PluggableAuthService.interfaces.plugins import IAuthenticationPlugin
 from Products.PluggableAuthService.interfaces.plugins import IExtractionPlugin
 from Products.PluggableAuthService.plugins.BasePlugin import BasePlugin
 from Products.PluggableAuthService.utils import classImplements
-from zope.interface import Interface
 from zope.interface import alsoProvides
-from plone.protect.interfaces import IDisableCSRFProtection
+from zope.interface import Interface
 
-import os
-import json
 import base64
+import json
+import os
 import webauthn
-
-from .key_data import IKeyData
-from .key_data import KEY
 
 
 prefix = os.path.basename(getConfiguration().clienthome)
