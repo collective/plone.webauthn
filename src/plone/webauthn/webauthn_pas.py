@@ -17,7 +17,7 @@ import base64
 import json
 import os
 import webauthn
-
+from urllib import parse
 
 prefix = os.path.basename(getConfiguration().clienthome)
 
@@ -67,30 +67,17 @@ class WebauthnPlugin(BasePlugin, Cacheable):
     security.declarePrivate("extractCredentials")
 
     def extractCredentials(self, request):
-        print(request.BODY)
+        #print(request.BODY)
         return {"login": "ajung", "password": request.BODY}
 
     security.declarePrivate("authenticateCredentials")
 
     def authenticateCredentials(self, credentials):
         """Find out if the login and password is correct"""
-        data = credentials["password"].decode("utf-8")
-        data = data[
-            data.find("form_data") + len("form_data=") : data.find("&buttons.login")
-        ]
 
-        data = data.replace("%7B", "{")
-        data = data.replace("%22", '"')
-        data = data.replace("%3A", ":")
-        data = data.replace("%2C", ",")
-        data = data.replace("%2B", "+")
-        data = data.replace("%3D", "=")
-        data = data.replace("%2F", "/")
-        data = data.replace("%7D", "}")
+        data = parse.parse_qs(credentials["password"].decode('utf-8'))
+        data = json.loads(data["form_data"][0])
 
-        print(data)
-
-        data = json.loads(data)
         user_id = data["user_id"]
         cname = data["cname"]
 
