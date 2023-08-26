@@ -27,10 +27,10 @@
   
   <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
   <script>
-    var siteName;
+    var siteURL;
     $(document).ready(function(){
         ele = document.getElementById("visual-portal-wrapper");
-        siteName = ele.getAttribute("data-base-url").substring(22);
+        siteURL = ele.getAttribute("data-base-url");
 
        getKeys();
     });
@@ -39,7 +39,7 @@
 
         $.ajax({
             type: "GET",
-            url: siteName + "/get-keys-for-user",
+            url: ele.getAttribute("data-base-url") + "/get-keys-for-user",
             success: function(data) {
                 data = $.parseJSON(data);
 
@@ -65,7 +65,7 @@
                         cname = this.parentNode.parentNode.childNodes[0].innerHTML;
                         $.ajax({
                             type: "GET",
-                            url: siteName + "/delete-credential?cname="+cname,
+                            url: siteURL + "/delete-credential?cname="+cname,
                             success: function(message) {
                                 getKeys();
                             }

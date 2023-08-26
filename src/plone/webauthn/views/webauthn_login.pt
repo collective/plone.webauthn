@@ -27,13 +27,13 @@
 
   <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
   <script>
-    var siteName, user_id;
+    var siteURL, user_id;
 
     window.onload = function() {
         ele = document.getElementById("visual-portal-wrapper");
-        siteName = ele.getAttribute("data-base-url").substring(22);
+        siteURL = ele.getAttribute("data-base-url");
 
-        document.LoginForm.action = "http://localhost:8080/"+siteName+"/login";
+        document.LoginForm.action = siteURL+"/login";
     }
 
     function getKeys(){
@@ -45,7 +45,7 @@
         }
         $.ajax({
             type: "GET",
-            url: siteName + "/get-keys-for-login?user_id=" + user_id,
+            url: siteURL + "/get-keys-for-login?user_id=" + user_id,
             success: function(data) {
 
                 data = $.parseJSON(data);

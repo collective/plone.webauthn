@@ -15,7 +15,7 @@ const asBase64 = ab => btoa(String.fromCharCode(...new Uint8Array(ab)));
 
 async function getPublicKey(path, user_id, cname) {
   
-    const r = await fetch(`${siteName}/${path}?user_id=${user_id}&cname=${cname}`);
+    const r = await fetch(`${siteURL}/${path}?user_id=${user_id}&cname=${cname}`);
     
     if(r.status == 404){
       error("User Not Found");
@@ -52,7 +52,7 @@ async function post(path, creds, challenge, user_id, cname) {
     document.getElementById("__ac_name").value = user_id;
     document.getElementById("__ac_password").value = "webauthn";
     document.getElementById("__ac_cname").value = cname;
-    document.getElementById("came_from").value = "http://localhost:8080/"+siteName;
+    document.getElementById("came_from").value = siteURL;
     document.getElementById("form_data").value = JSON.stringify(data);
     document.getElementById("buttons-login").click();
 }

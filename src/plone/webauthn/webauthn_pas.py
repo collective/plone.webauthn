@@ -67,6 +67,7 @@ class WebauthnPlugin(BasePlugin, Cacheable):
     security.declarePrivate("extractCredentials")
 
     def extractCredentials(self, request):
+        print(request.BODY)
         return {"login": "ajung", "password": request.BODY}
 
     security.declarePrivate("authenticateCredentials")
@@ -86,6 +87,8 @@ class WebauthnPlugin(BasePlugin, Cacheable):
         data = data.replace("%3D", "=")
         data = data.replace("%2F", "/")
         data = data.replace("%7D", "}")
+
+        print(data)
 
         data = json.loads(data)
         user_id = data["user_id"]
@@ -120,7 +123,7 @@ class WebauthnPlugin(BasePlugin, Cacheable):
             return (None, None)
 
         # data_base.update_key(user_id, cname, {"sign_count": auth.new_sign_count})
-
+        print("authrntication succesful")
         return (user_id, user_id)
 
 

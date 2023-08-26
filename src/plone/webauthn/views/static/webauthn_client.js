@@ -16,7 +16,7 @@ async function getPublicKey(path, attestation_type, authenticator_type) {
 
   cname = document.getElementById("cname").value;
 
-  const r = await fetch(`/${siteName}/${path}?cname=${cname}&attestation_type=${attestation_type}&authenticator_type=${authenticator_type}`);
+  const r = await fetch(`${siteURL}/${path}?cname=${cname}&attestation_type=${attestation_type}&authenticator_type=${authenticator_type}`);
   if(r.status == 404){
     error("User Not Found");
   }
@@ -47,7 +47,7 @@ async function post(path, creds, challenge) {
     data.response.authenticatorData = asBase64(authenticatorData);
   }
   cname = document.getElementById("cname").value;
-  const r2 = await fetch(`${siteName}/${path}?cname=${cname}`, {
+  const r2 = await fetch(`${siteURL}/${path}?cname=${cname}`, {
     method: 'POST',
     body: JSON.stringify(data),
     headers: {'content-type': 'application/json'}
