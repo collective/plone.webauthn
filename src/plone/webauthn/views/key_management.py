@@ -5,14 +5,8 @@ from ..key_data import IKeyData
 from plone.protect.interfaces import IDisableCSRFProtection
 from Products.Five.browser import BrowserView
 from webauthn.helpers.structs import AttestationConveyancePreference
-from webauthn.helpers.structs import AuthenticationCredential
 from webauthn.helpers.structs import AuthenticatorAttachment
 from webauthn.helpers.structs import AuthenticatorSelectionCriteria
-from webauthn.helpers.structs import PublicKeyCredentialCreationOptions
-from webauthn.helpers.structs import PublicKeyCredentialDescriptor
-from webauthn.helpers.structs import PublicKeyCredentialRequestOptions
-from webauthn.helpers.structs import PublicKeyCredentialType
-from webauthn.helpers.structs import RegistrationCredential
 from webauthn.helpers.structs import ResidentKeyRequirement
 from webauthn.helpers.structs import UserVerificationRequirement
 from zope.interface import alsoProvides
@@ -71,7 +65,7 @@ class KeyManagement(BrowserView):
 
         try:
             public_key = webauthn.generate_registration_options(  # type: ignore
-                rp_id="localhost",
+                rp_id= "localhost",
                 rp_name="Plone",
                 user_id=cname,
                 user_name=user_id,
@@ -85,8 +79,9 @@ class KeyManagement(BrowserView):
                     user_verification=UserVerificationRequirement.REQUIRED,
                 ),
             )
-        except:
-            return b'{"error": "generating registration options failed"}'
+        except Exception as e:
+            message = {"error": "generating registration options failed: " + str(e) }
+            return json.dumps(message)
 
         self.request.response.setHeader("Content-type", "application/json")
 
@@ -118,9 +113,10 @@ class KeyManagement(BrowserView):
                 expected_rp_id="localhost",
                 expected_origin="http://localhost:8080",
             )
-        except:
-            return b'{"error": "verifying registration failed"}'
-
+        except Exception as e:
+            message = {"error": "verifying registration failed: " + str(e) }
+            return json.dumps(message)
+        
         data = {
             "public_key": registration.credential_public_key,
             "sign_count": registration.sign_count,

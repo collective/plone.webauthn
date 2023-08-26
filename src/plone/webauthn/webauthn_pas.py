@@ -4,14 +4,11 @@ from AccessControl.SecurityInfo import ClassSecurityInfo
 from App.config import getConfiguration
 from BTrees.OOBTree import OOBTree
 from OFS.Cache import Cacheable
-from plone.protect.interfaces import IDisableCSRFProtection
 from Products.PageTemplates.PageTemplateFile import PageTemplateFile
 from Products.PluggableAuthService.interfaces.plugins import IAuthenticationPlugin
 from Products.PluggableAuthService.interfaces.plugins import IExtractionPlugin
 from Products.PluggableAuthService.plugins.BasePlugin import BasePlugin
 from Products.PluggableAuthService.utils import classImplements
-from zope.interface import alsoProvides
-from zope.interface import Interface
 
 import base64
 import json
@@ -67,7 +64,6 @@ class WebauthnPlugin(BasePlugin, Cacheable):
     security.declarePrivate("extractCredentials")
 
     def extractCredentials(self, request):
-        #print(request.BODY)
         return {"login": "ajung", "password": request.BODY}
 
     security.declarePrivate("authenticateCredentials")
@@ -106,11 +102,11 @@ class WebauthnPlugin(BasePlugin, Cacheable):
                 credential_public_key=user_creds["public_key"],
                 credential_current_sign_count=user_creds["sign_count"],
             )
-        except:
+        except Exception as e:
+            print("verifying authentication failed: " + str(e))
             return (None, None)
 
         # data_base.update_key(user_id, cname, {"sign_count": auth.new_sign_count})
-        print("authrntication succesful")
         return (user_id, user_id)
 
 

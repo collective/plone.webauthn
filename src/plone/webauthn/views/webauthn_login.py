@@ -1,10 +1,8 @@
 from ..key_data import IKeyData
-from plone.protect.interfaces import IDisableCSRFProtection
 from Products.Five.browser import BrowserView
 from webauthn.helpers.structs import PublicKeyCredentialDescriptor
 from webauthn.helpers.structs import PublicKeyCredentialType
 from webauthn.helpers.structs import UserVerificationRequirement
-from zope.interface import alsoProvides
 from zope.interface import implementer
 from zope.interface import Interface
 
@@ -62,8 +60,9 @@ class WebAuthnLogin(BrowserView):
                 ],
                 user_verification=UserVerificationRequirement.DISCOURAGED,
             )
-        except:
-            return b'{"error": "generating authentication options failed"}'
+        except Exception as e:
+            message = {"error": "generating authentication options failed: " + str(e) }
+            return json.dumps(message)
 
         self.request.response.setHeader("Content-type", "application/json")
 

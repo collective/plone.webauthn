@@ -1,5 +1,3 @@
-from BTrees.OOBTree import OOBTree
-
 import plone.api
 import zope.interface
 
