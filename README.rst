@@ -32,6 +32,11 @@ plone.webauthn
 
 webauthn addon for plone
 
+Requirments
+------------
+Webauthn only works with HTTPS or localhost. 
+
+
 Features
 --------
 
