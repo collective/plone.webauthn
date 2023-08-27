@@ -32,9 +32,9 @@ plone.webauthn
 
 webauthn addon for plone
 
-Requirments
+Requirements
 ------------
-Webauthn only works with HTTPS or localhost. 
+Webauthn only works with HTTPS or localhost. https://stackoverflow.com/questions/55971593/navigator-credentials-is-null-on-local-server
 
 
 Features
